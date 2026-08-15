@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Validation Results</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 40px 24px 70px;
+            line-height: 1.55;
+            color: #1f2937;
+            background: #f7f8fa;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            font-size: 2rem;
+            color: #111827;
+        }
+
+        .summary {
+            margin-bottom: 22px;
+            color: #4b5563;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 28px;
+            padding: 14px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+        }
+
+        .filter-button {
+            cursor: pointer;
+            padding: 7px 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #374151;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .filter-button:hover {
+            background: #f3f4f6;
+        }
+
+        .filter-button.active {
+            color: #ffffff;
+            background: #111827;
+            border-color: #111827;
+        }
+
+        .filter-count {
+            margin-left: 4px;
+            font-weight: 500;
+        }
+
+        .result-card {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+
+        .result-card.hidden {
+            display: none;
+        }
+
+        .card-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fbfbfc;
+        }
+
+        .question-position {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .question-text {
+            margin-bottom: 16px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .status-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            border: 1px solid;
+        }
+
+        .status-validated {
+            color: #166534;
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        .status-partially_validated {
+            color: #854d0e;
+            background: #fefce8;
+            border-color: #fde047;
+        }
+
+        .status-not_validated {
+            color: #9a3412;
+            background: #fff7ed;
+            border-color: #fdba74;
+        }
+
+        .status-contradicted {
+            color: #991b1b;
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .status-insufficient_evidence {
+            color: #374151;
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .status-error {
+            color: #991b1b;
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .meta-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 0.84rem;
+        }
+
+        .card-body {
+            padding: 22px;
+        }
+
+        .section {
+            margin-top: 22px;
+        }
+
+        .section:first-child {
+            margin-top: 0;
+        }
+
+        .section h3 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+            color: #111827;
+        }
+
+        .section p {
+            margin-bottom: 0;
+        }
+
+        ul {
+            margin-top: 8px;
+            margin-bottom: 0;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .source {
+            margin-top: 12px;
+            padding: 14px 16px;
+            border-left: 4px solid #4b5563;
+            background: #f9fafb;
+        }
+
+        .source-label {
+            margin-bottom: 4px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .source-id {
+            margin-bottom: 10px;
+            font-size: 0.82rem;
+            color: #6b7280;
+        }
+
+        .excerpt {
+            white-space: pre-wrap;
+            padding: 12px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+
+        .error {
+            margin: 0;
+            padding: 14px;
+            border: 1px solid #fca5a5;
+            border-radius: 6px;
+            color: #991b1b;
+            background: #fef2f2;
+            font-weight: 700;
+        }
+
+        details {
+            margin-top: 26px;
+            padding-top: 18px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .retrieved-item {
+            margin-top: 14px;
+            padding: 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .retrieved-meta {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #4b5563;
+        }
+
+        .empty-note {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        #no-results {
+            display: none;
+            padding: 24px;
+            text-align: center;
+            color: #6b7280;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 24px 14px 50px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .card-header,
+            .card-body {
+                padding: 18px;
+            }
+
+            .filter-bar {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>
+        Vendor Questionnaire Evidence Validation
+    </h1>
+
+    <div class="summary">
+        <strong>{{ questions_parsed }}</strong>
+        questions parsed
+
+        &nbsp;|&nbsp;
+
+        <strong>{{ questions_attempted }}</strong>
+        analyzed
+
+        &nbsp;|&nbsp;
+
+        <strong>{{ successful_validations }}</strong>
+        successful
+
+        &nbsp;|&nbsp;
+
+        <strong>{{ failed_validations }}</strong>
+        failed
+    </div>
+
+
+    <div class="filter-bar">
+
+        <button
+            class="filter-button active"
+            type="button"
+            data-filter="all"
+        >
+            All
+            <span
+                class="filter-count"
+                data-count="all"
+            ></span>
+        </button>
+
+        <button
+            class="filter-button"
+            type="button"
+            data-filter="validated"
+        >
+            Validated
+            <span
+                class="filter-count"
+                data-count="validated"
+            ></span>
+        </button>
+
+        <button
+            class="filter-button"
+            type="button"
+            data-filter="partially_validated"
+        >
+            Partially Validated
+            <span
+                class="filter-count"
+                data-count="partially_validated"
+            ></span>
+        </button>
+
+        <button
+            class="filter-button"
+            type="button"
+            data-filter="not_validated"
+        >
+            Not Validated
+            <span
+                class="filter-count"
+                data-count="not_validated"
+            ></span>
+        </button>
+
+        <button
+            class="filter-button"
+            type="button"
+            data-filter="contradicted"
+        >
+            Contradicted
+            <span
+                class="filter-count"
+                data-count="contradicted"
+            ></span>
+        </button>
+
+        <button
+            class="filter-button"
+            type="button"
+            data-filter="insufficient_evidence"
+        >
+            Insufficient Evidence
+            <span
+                class="filter-count"
+                data-count="insufficient_evidence"
+            ></span>
+        </button>
+
+        <button
+            class="filter-button"
+            type="button"
+            data-filter="error"
+        >
+            Errors
+            <span
+                class="filter-count"
+                data-count="error"
+            ></span>
+        </button>
+
+    </div>
+
+
+    <div id="results-container">
+
+        {% for item in validation_results %}
+
+            {% if item.error %}
+                {% set card_status = "error" %}
+            {% elif item.validation %}
+                {% set card_status = item.validation.status %}
+            {% else %}
+                {% set card_status = "error" %}
+            {% endif %}
+
+            <div
+                class="result-card"
+                data-status="{{ card_status }}"
+            >
+
+                <div class="card-header">
+
+                    <div class="question-position">
+                        Question {{ item.question_position }}
+                    </div>
+
+                    <div class="question-text">
+                        {{ item.question.question_text }}
+                    </div>
+
+
+                    {% if item.error %}
+
+                        <div class="status-row">
+
+                            <span
+                                class="
+                                    status-badge
+                                    status-error
+                                "
+                            >
+                                Error
+                            </span>
+
+                        </div>
+
+                    {% elif item.validation %}
+
+                        <div class="status-row">
+
+                            <span
+                                class="
+                                    status-badge
+                                    status-{{ item.validation.status }}
+                                "
+                            >
+                                {{
+                                    item.validation.status
+                                    .replace("_", " ")
+                                }}
+                            </span>
+
+                            <span class="meta-badge">
+                                Confidence:
+                                <strong>
+                                    {{ item.validation.confidence }}
+                                </strong>
+                            </span>
+
+                            <span class="meta-badge">
+                                Evidence:
+                                <strong>
+                                    {{ item.validation.evidence_strength }}
+                                </strong>
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if item.error %}
+
+                    <div class="card-body">
+
+                        <p class="error">
+                            Validation error:
+                            {{ item.error }}
+                        </p>
+
+                    </div>
+
+
+                {% elif item.validation %}
+
+                    <div class="card-body">
+
+                        <div class="section">
+                            <h3>Assessment</h3>
+
+                            <p>
+                                {{ item.validation.explanation }}
+                            </p>
+                        </div>
+
+
+                        {% if item.validation.evidence_proves %}
+
+                            <div class="section">
+                                <h3>
+                                    What the evidence proves
+                                </h3>
+
+                                <ul>
+                                    {% for point in item.validation.evidence_proves %}
+                                        <li>
+                                            {{ point }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if item.validation.evidence_does_not_prove %}
+
+                            <div class="section">
+                                <h3>
+                                    What the evidence does not prove
+                                </h3>
+
+                                <ul>
+                                    {% for point in item.validation.evidence_does_not_prove %}
+                                        <li>
+                                            {{ point }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if item.validation.gaps %}
+
+                            <div class="section">
+                                <h3>Gaps</h3>
+
+                                <ul>
+                                    {% for gap in item.validation.gaps %}
+                                        <li>
+                                            {{ gap }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if item.validation.contradictions %}
+
+                            <div class="section">
+                                <h3>Contradictions</h3>
+
+                                <ul>
+                                    {% for contradiction in item.validation.contradictions %}
+                                        <li>
+                                            {{ contradiction }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if item.validation.additional_evidence_needed %}
+
+                            <div class="section">
+                                <h3>
+                                    Additional evidence needed
+                                </h3>
+
+                                <ul>
+                                    {% for evidence in item.validation.additional_evidence_needed %}
+                                        <li>
+                                            {{ evidence }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="section">
+                            <h3>Reviewer action</h3>
+
+                            <p>
+                                {{ item.validation.reviewer_action }}
+                            </p>
+                        </div>
+
+
+                        {% if item.resolved_sources %}
+
+                            <div class="section">
+
+                                <h3>Sources</h3>
+
+                                {% for source in item.resolved_sources %}
+
+                                    <div class="source">
+
+                                        <div class="source-label">
+                                            {{ source.citation_label }}
+                                        </div>
+
+                                        <div class="source-id">
+                                            Source ID:
+                                            {{ source.source_id }}
+                                        </div>
+
+                                        <div class="excerpt">
+                                            {{ source.evidence_excerpt }}
+                                        </div>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <details>
+
+                            <summary>
+                                Show retrieved evidence
+                            </summary>
+
+                            {% for evidence in item.retrieval.retrieved_evidence %}
+
+                                <div class="retrieved-item">
+
+                                    <div class="retrieved-meta">
+
+                                        <strong>
+                                            {{ evidence.source_id }}
+                                        </strong>
+
+                                        &nbsp;|&nbsp;
+
+                                        Retrieval score:
+                                        {{ evidence.hybrid_score }}
+
+                                    </div>
+
+                                    <div class="excerpt">
+                                        {{ evidence.text }}
+                                    </div>
+
+                                </div>
+
+                            {% else %}
+
+                                <p class="empty-note">
+                                    No retrieved evidence.
+                                </p>
+
+                            {% endfor %}
+
+                        </details>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <div id="no-results">
+        No results match this filter.
+    </div>
+
+
+    <script>
+        const cards = Array.from(
+            document.querySelectorAll(
+                ".result-card"
+            )
+        );
+
+        const buttons = Array.from(
+            document.querySelectorAll(
+                ".filter-button"
+            )
+        );
+
+        const countElements = Array.from(
+            document.querySelectorAll(
+                "[data-count]"
+            )
+        );
+
+        function updateCounts() {
+            const counts = {
+                all: cards.length,
+                validated: 0,
+                partially_validated: 0,
+                not_validated: 0,
+                contradicted: 0,
+                insufficient_evidence: 0,
+                error: 0,
+            };
+
+            cards.forEach((card) => {
+                const status = card.dataset.status;
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        counts,
+                        status
+                    )
+                ) {
+                    counts[status] += 1;
+                }
+            });
+
+            countElements.forEach(
+                (element) => {
+                    const key =
+                        element.dataset.count;
+
+                    element.textContent =
+                        `(${counts[key] || 0})`;
+                }
+            );
+        }
+
+        function applyFilter(filter) {
+            let visibleCount = 0;
+
+            cards.forEach((card) => {
+                const matches =
+                    filter === "all"
+                    || card.dataset.status === filter;
+
+                card.classList.toggle(
+                    "hidden",
+                    !matches
+                );
+
+                if (matches) {
+                    visibleCount += 1;
+                }
+            });
+
+            document.getElementById(
+                "no-results"
+            ).style.display =
+                visibleCount === 0
+                ? "block"
+                : "none";
+        }
+
+        buttons.forEach((button) => {
+            button.addEventListener(
+                "click",
+                () => {
+                    buttons.forEach(
+                        (item) => {
+                            item.classList.remove(
+                                "active"
+                            );
+                        }
+                    );
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                    applyFilter(
+                        button.dataset.filter
+                    );
+                }
+            );
+        });
+
+        updateCounts();
+        applyFilter("all");
+    </script>
+
+</body>
+</html>

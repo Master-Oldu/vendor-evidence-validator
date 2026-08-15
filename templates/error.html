@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Validation Error</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            line-height: 1.55;
+            color: #1f2937;
+            background: #f7f8fa;
+        }
+
+        .error-card {
+            padding: 28px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #991b1b;
+        }
+
+        .message {
+            margin-bottom: 24px;
+            font-size: 1.05rem;
+        }
+
+        .detail {
+            margin-bottom: 24px;
+            padding: 12px;
+            border-radius: 6px;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+
+        a {
+            display: inline-block;
+            padding: 9px 14px;
+            border-radius: 6px;
+            color: #ffffff;
+            background: #111827;
+            text-decoration: none;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="error-card">
+
+        <h1>
+            Validation could not continue
+        </h1>
+
+        <p class="message">
+            {{ message }}
+        </p>
+
+        {% if detail %}
+            <div class="detail">
+                {{ detail }}
+            </div>
+        {% endif %}
+
+        <a href="/">
+            Start over
+        </a>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Questionnaire Worksheets</title>
+</head>
+<body>
+
+    <h1>Select Questionnaire Worksheets</h1>
+
+    <p>
+        Choose the worksheet or worksheets that contain questionnaire questions.
+    </p>
+
+    <p>
+        <strong>Questionnaire:</strong> {{ questionnaire_name }}
+    </p>
+
+    <form method="POST" action="/select-sheets">
+
+        <input
+            type="hidden"
+            name="questionnaire_name"
+            value="{{ questionnaire_name }}"
+        >
+
+        {% for evidence_name in evidence_names %}
+            <input
+                type="hidden"
+                name="evidence_names"
+                value="{{ evidence_name }}"
+            >
+        {% endfor %}
+
+        {% for sheet in sheets %}
+            <div>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="selected_sheets"
+                        value="{{ sheet.sheet_name }}"
+                    >
+
+                    {{ sheet.sheet_name }}
+                    — {{ sheet.data_rows }} rows
+                </label>
+            </div>
+            <br>
+        {% endfor %}
+
+        <button type="submit">
+            Continue
+        </button>
+
+    </form>
+
+</body>
+</html>

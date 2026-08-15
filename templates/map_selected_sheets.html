@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Map Questionnaire Worksheets</title>
+</head>
+<body>
+
+    <h1>Map Questionnaire Worksheets</h1>
+
+    <p>
+        Map the columns for each selected worksheet.
+    </p>
+
+    <p>
+        <strong>Questionnaire:</strong> {{ questionnaire_name }}
+    </p>
+
+    <form method="POST" action="/map-selected-sheets">
+
+        <input
+            type="hidden"
+            name="questionnaire_name"
+            value="{{ questionnaire_name }}"
+        >
+
+        {% for evidence_name in evidence_names %}
+            <input
+                type="hidden"
+                name="evidence_names"
+                value="{{ evidence_name }}"
+            >
+        {% endfor %}
+
+        {% for sheet in sheets %}
+
+            <hr>
+
+            <h2>{{ sheet.sheet_name }}</h2>
+
+            <p>
+                {{ sheet.data_rows }} detected rows
+            </p>
+
+            <input
+                type="hidden"
+                name="sheet_name_{{ loop.index0 }}"
+                value="{{ sheet.sheet_name }}"
+            >
+
+            <input
+                type="hidden"
+                name="header_row_{{ loop.index0 }}"
+                value="{{ sheet.header_row }}"
+            >
+
+            <label>
+                Question column
+            </label><br>
+
+            <select
+                name="question_column_{{ loop.index0 }}"
+                required
+            >
+                <option value="">Select column</option>
+
+                {% for column in sheet.columns %}
+                    <option value="{{ column }}">
+                        {{ column }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <label>
+                Question ID column (optional)
+            </label><br>
+
+            <select name="id_column_{{ loop.index0 }}">
+                <option value="">None</option>
+
+                {% for column in sheet.columns %}
+                    <option value="{{ column }}">
+                        {{ column }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <label>
+                Vendor answer column (optional)
+            </label><br>
+
+            <select name="answer_column_{{ loop.index0 }}">
+                <option value="">None</option>
+
+                {% for column in sheet.columns %}
+                    <option value="{{ column }}">
+                        {{ column }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <label>
+                Description / context column (optional)
+            </label><br>
+
+            <select name="description_column_{{ loop.index0 }}">
+                <option value="">None</option>
+
+                {% for column in sheet.columns %}
+                    <option value="{{ column }}">
+                        {{ column }}
+                    </option>
+                {% endfor %}
+            </select>
+
+        {% endfor %}
+
+        <input
+            type="hidden"
+            name="sheet_count"
+            value="{{ sheets|length }}"
+        >
+
+        <hr>
+
+        <h2>Validation Batch</h2>
+
+        <p>
+            Choose where to begin and how many
+            questionnaire questions to validate.
+        </p>
+
+        <label for="validation_start">
+            Start at question
+        </label><br>
+
+        <input
+            id="validation_start"
+            name="validation_start"
+            type="number"
+            min="1"
+            value="1"
+            required
+        >
+
+        <br><br>
+
+        <label for="validation_limit">
+            Questions to validate
+        </label><br>
+
+        <select
+            id="validation_limit"
+            name="validation_limit"
+            required
+        >
+            <option value="1">
+                1 question
+            </option>
+
+            <option value="3" selected>
+                3 questions
+            </option>
+
+            <option value="5">
+                5 questions
+            </option>
+        </select>
+
+        <p>
+            Example: start at question 40 and
+            validate 3 to process questions
+            40 through 42.
+        </p>
+
+        <p>
+            Larger batches will take longer because
+            each question is evaluated separately
+            by the local AI model.
+        </p>
+
+        <br>
+
+        <button type="submit">
+            Run Validation
+        </button>
+
+    </form>
+
+</body>
+</html>
