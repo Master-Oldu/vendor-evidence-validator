@@ -11,22 +11,80 @@
     <title>Validation Results</title>
 
     <style>
+        :root {
+            /* VendorGaps core */
+            --bg: #0c141b;
+            --bg-secondary: #111a23;
+            --surface: #18242e;
+            --surface-raised: #1d2b36;
+            --surface-soft: #14202a;
+
+            --border: rgba(215, 224, 229, 0.12);
+            --border-strong: rgba(215, 224, 229, 0.20);
+
+            --text: #f4f7f8;
+            --text-secondary: #d7e0e5;
+            --text-muted: #9eacb5;
+
+            --accent: #d47a45;
+            --accent-light: #e2986b;
+            --accent-soft: rgba(212, 122, 69, 0.11);
+            --accent-border: rgba(212, 122, 69, 0.34);
+
+            /* Validation states */
+            --green-text: #8fd4ab;
+            --green-bg: rgba(65, 145, 98, 0.12);
+            --green-border: rgba(107, 192, 142, 0.35);
+
+            --yellow-text: #e5c77c;
+            --yellow-bg: rgba(184, 141, 41, 0.12);
+            --yellow-border: rgba(218, 181, 88, 0.35);
+
+            --orange-text: #e8a674;
+            --orange-bg: rgba(212, 122, 69, 0.12);
+            --orange-border: rgba(212, 122, 69, 0.38);
+
+            --red-text: #e7a0a0;
+            --red-bg: rgba(175, 66, 66, 0.13);
+            --red-border: rgba(218, 112, 112, 0.35);
+
+            --gray-text: #c0cbd1;
+            --gray-bg: rgba(174, 187, 195, 0.07);
+            --gray-border: rgba(174, 187, 195, 0.24);
+
+            --shadow-sm:
+                0 1px 2px rgba(0, 0, 0, 0.18),
+                0 4px 12px rgba(0, 0, 0, 0.08);
+
+            --shadow-card:
+                0 1px 2px rgba(0, 0, 0, 0.20),
+                0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
         * {
             box-sizing: border-box;
         }
 
+        html {
+            background: var(--bg);
+        }
+
         body {
+            margin: 0;
+
             font-family:
+                "Plus Jakarta Sans",
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
                 Arial,
                 Helvetica,
                 sans-serif;
 
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 40px 24px 70px;
             line-height: 1.55;
-            color: #1f2937;
-            background: #f7f8fa;
+            color: var(--text);
+
+            background-color: var(--bg);
         }
 
         h1,
@@ -36,60 +94,347 @@
             margin-top: 0;
         }
 
-        h1 {
-            margin-bottom: 8px;
-            font-size: 2rem;
-            color: #111827;
+        button {
+            font: inherit;
         }
 
-        .summary {
-            margin-bottom: 22px;
-            color: #4b5563;
+
+        /* ---------------------------------------------
+           PAGE SHELL
+        --------------------------------------------- */
+
+        .page-shell {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 44px 28px 72px;
+        }
+
+
+        /* ---------------------------------------------
+           TOP HEADER
+        --------------------------------------------- */
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 32px;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .header-copy {
+            max-width: 790px;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 9px;
+
+            color: var(--accent-light);
+
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 24px;
+            height: 2px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+
+            color: var(--text);
+
+            font-size: 2.15rem;
+            font-weight: 800;
+            line-height: 1.17;
+            letter-spacing: -0.035em;
+        }
+
+        .header-description {
+            max-width: 730px;
+            margin-bottom: 0;
+
+            color: var(--text-secondary);
+
+            font-size: 0.98rem;
+            line-height: 1.65;
+        }
+
+        .review-badge {
+            flex-shrink: 0;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 11px;
+
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+
+            background: rgba(24, 36, 46, 0.86);
+            color: var(--text-secondary);
+
+            font-size: 0.78rem;
+            font-weight: 700;
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .review-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--accent);
+
+            box-shadow:
+                0 0 0 3px rgba(212, 122, 69, 0.11);
+        }
+
+
+        /* ---------------------------------------------
+           ASSESSMENT CONTEXT
+        --------------------------------------------- */
+
+        .context-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 24px;
+            align-items: center;
+
+            margin-bottom: 18px;
+            padding: 12px 15px;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            background: rgba(24, 36, 46, 0.84);
+
+            box-shadow: var(--shadow-sm);
+
+            color: var(--text-muted);
+
+            font-size: 0.8rem;
+        }
+
+        .context-item strong {
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+
+
+        /* ---------------------------------------------
+           SUMMARY METRICS
+        --------------------------------------------- */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 28px;
+        }
+
+        .metric-card {
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 17px 18px 16px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: var(--surface);
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metric-card::after {
+            content: "";
+
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 2px;
+
+            background: rgba(215, 224, 229, 0.12);
+        }
+
+        .metric-success::after {
+            background: rgba(107, 192, 142, 0.65);
+        }
+
+        .metric-failed::after {
+            background: rgba(218, 112, 112, 0.60);
+        }
+
+        .metric-label {
+            margin-bottom: 7px;
+
+            color: var(--text-muted);
+
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.065em;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            margin-bottom: 0;
+
+            color: var(--text);
+
+            font-size: 1.7rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .metric-success .metric-value {
+            color: var(--green-text);
+        }
+
+        .metric-failed .metric-value {
+            color: var(--red-text);
+        }
+
+
+        /* ---------------------------------------------
+           REVIEW / FILTER PANEL
+        --------------------------------------------- */
+
+        .review-panel {
+            margin-bottom: 24px;
+            padding: 17px 18px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: var(--surface);
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .review-panel-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: center;
+
+            margin-bottom: 13px;
+        }
+
+        .review-panel-title {
+            margin-bottom: 2px;
+
+            color: var(--text);
+
+            font-size: 0.91rem;
+            font-weight: 750;
+        }
+
+        .review-panel-subtitle {
+            margin-bottom: 0;
+
+            color: var(--text-muted);
+
+            font-size: 0.78rem;
+        }
+
+        .visible-results {
+            color: var(--text-muted);
+
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        .visible-results strong {
+            color: var(--text-secondary);
         }
 
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 28px;
-            padding: 14px;
-            background: #ffffff;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
+            gap: 7px;
         }
 
         .filter-button {
             cursor: pointer;
-            padding: 7px 11px;
-            border: 1px solid #d1d5db;
-            border-radius: 999px;
-            background: #ffffff;
-            color: #374151;
-            font-size: 0.82rem;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+
+            padding: 7px 10px;
+
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+
+            background: var(--surface-soft);
+            color: var(--text-secondary);
+
+            font-size: 0.76rem;
             font-weight: 700;
+
+            transition:
+                background 120ms ease,
+                border-color 120ms ease,
+                color 120ms ease,
+                box-shadow 120ms ease;
         }
 
         .filter-button:hover {
-            background: #f3f4f6;
+            border-color: rgba(212, 122, 69, 0.42);
+
+            background: var(--accent-soft);
+            color: var(--text);
         }
 
         .filter-button.active {
+            border-color: var(--accent);
+
+            background: var(--accent);
             color: #ffffff;
-            background: #111827;
-            border-color: #111827;
+
+            box-shadow:
+                0 2px 8px rgba(212, 122, 69, 0.18);
         }
 
         .filter-count {
-            margin-left: 4px;
-            font-weight: 500;
+            opacity: 0.78;
+            font-weight: 600;
         }
 
+
+        /* ---------------------------------------------
+           RESULT CARDS
+        --------------------------------------------- */
+
         .result-card {
-            background: #ffffff;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
             overflow: hidden;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            background: var(--surface);
+
+            box-shadow: var(--shadow-card);
         }
 
         .result-card.hidden {
@@ -97,92 +442,153 @@
         }
 
         .card-header {
-            padding: 20px 22px;
-            border-bottom: 1px solid #e5e7eb;
-            background: #fbfbfc;
+            padding: 21px 23px 19px;
+
+            border-bottom: 1px solid var(--border);
+
+            background: var(--surface-soft);
         }
 
-        .question-position {
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #6b7280;
+        .question-heading {
+            display: flex;
+            gap: 13px;
+            align-items: flex-start;
+
+            margin-bottom: 16px;
+        }
+
+        .question-number {
+            flex: 0 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 34px;
+            height: 34px;
+            padding: 0 8px;
+
+            border: 1px solid var(--accent-border);
+            border-radius: 7px;
+
+            background: var(--accent-soft);
+            color: var(--accent-light);
+
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .question-block {
+            min-width: 0;
+        }
+
+        .question-label {
+            margin-bottom: 4px;
+
+            color: var(--text-muted);
+
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.07em;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
         }
 
         .question-text {
-            margin-bottom: 16px;
-            font-size: 1.08rem;
-            font-weight: 600;
-            color: #111827;
+            margin-bottom: 0;
+
+            color: var(--text);
+
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.48;
         }
 
         .status-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
 
         .status-badge {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 800;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+
+            padding: 5px 9px;
+
             border: 1px solid;
+            border-radius: 5px;
+
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         .status-validated {
-            color: #166534;
-            background: #f0fdf4;
-            border-color: #86efac;
+            color: var(--green-text);
+            background: var(--green-bg);
+            border-color: var(--green-border);
         }
 
         .status-partially_validated {
-            color: #854d0e;
-            background: #fefce8;
-            border-color: #fde047;
+            color: var(--yellow-text);
+            background: var(--yellow-bg);
+            border-color: var(--yellow-border);
         }
 
         .status-not_validated {
-            color: #9a3412;
-            background: #fff7ed;
-            border-color: #fdba74;
+            color: var(--orange-text);
+            background: var(--orange-bg);
+            border-color: var(--orange-border);
         }
 
         .status-contradicted {
-            color: #991b1b;
-            background: #fef2f2;
-            border-color: #fca5a5;
+            color: var(--red-text);
+            background: var(--red-bg);
+            border-color: var(--red-border);
         }
 
         .status-insufficient_evidence {
-            color: #374151;
-            background: #f3f4f6;
-            border-color: #9ca3af;
+            color: var(--gray-text);
+            background: var(--gray-bg);
+            border-color: var(--gray-border);
         }
 
         .status-error {
-            color: #991b1b;
-            background: #fef2f2;
-            border-color: #fca5a5;
+            color: var(--red-text);
+            background: var(--red-bg);
+            border-color: var(--red-border);
         }
 
         .meta-badge {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 6px;
-            background: #f3f4f6;
-            color: #4b5563;
-            font-size: 0.84rem;
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+
+            padding: 5px 8px;
+
+            border: 1px solid var(--border);
+            border-radius: 5px;
+
+            background: var(--surface-raised);
+            color: var(--text-muted);
+
+            font-size: 0.74rem;
         }
 
+        .meta-badge strong {
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+
+
+        /* ---------------------------------------------
+           CARD BODY
+        --------------------------------------------- */
+
         .card-body {
-            padding: 22px;
+            padding: 23px;
         }
 
         .section {
@@ -195,110 +601,407 @@
 
         .section h3 {
             margin-bottom: 8px;
-            font-size: 1rem;
-            color: #111827;
+
+            color: var(--text-secondary);
+
+            font-size: 0.86rem;
+            font-weight: 750;
         }
 
         .section p {
             margin-bottom: 0;
+
+            color: var(--text-secondary);
+        }
+
+        .assessment-box {
+            padding: 15px 16px;
+
+            border: 1px solid var(--border);
+            border-radius: 7px;
+
+            background: var(--surface-soft);
+        }
+
+        .assessment-box h3 {
+            margin-bottom: 7px;
+
+            color: var(--accent-light);
+        }
+
+        .assessment-box p {
+            margin-bottom: 0;
+
+            color: var(--text-secondary);
+        }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-top: 22px;
+        }
+
+        .evidence-panel {
+            padding: 15px 16px;
+
+            border: 1px solid var(--border);
+            border-radius: 7px;
+
+            background: var(--surface-soft);
+        }
+
+        .evidence-panel h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+
+            color: var(--text-secondary);
+
+            font-size: 0.86rem;
+        }
+
+        .evidence-panel-proves {
+            border-left: 3px solid #69b487;
+        }
+
+        .evidence-panel-missing {
+            border-left: 3px solid #c99a55;
         }
 
         ul {
-            margin-top: 8px;
-            margin-bottom: 0;
-            padding-left: 24px;
+            margin: 7px 0 0;
+            padding-left: 20px;
+
+            color: var(--text-secondary);
         }
 
         li {
             margin-bottom: 5px;
         }
 
-        .source {
-            margin-top: 12px;
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        .attention-panel {
             padding: 14px 16px;
-            border-left: 4px solid #4b5563;
-            background: #f9fafb;
+
+            border-radius: 7px;
+        }
+
+        .attention-gap {
+            border: 1px solid rgba(218, 181, 88, 0.24);
+
+            background:
+                rgba(184, 141, 41, 0.065);
+        }
+
+        .attention-contradiction {
+            border: 1px solid rgba(218, 112, 112, 0.25);
+
+            background:
+                rgba(175, 66, 66, 0.07);
+        }
+
+        .attention-additional {
+            border: 1px solid var(--border);
+
+            background:
+                rgba(174, 187, 195, 0.045);
+        }
+
+        .reviewer-action {
+            padding: 15px 16px;
+
+            border: 1px solid var(--accent-border);
+            border-radius: 7px;
+
+            background: var(--accent-soft);
+        }
+
+        .reviewer-action h3 {
+            margin-bottom: 6px;
+
+            color: var(--accent-light);
+        }
+
+
+        /* ---------------------------------------------
+           SOURCES
+        --------------------------------------------- */
+
+        .sources-heading {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: baseline;
+
+            margin-bottom: 10px;
+        }
+
+        .sources-heading h3 {
+            margin-bottom: 0;
+        }
+
+        .sources-note {
+            color: var(--text-muted);
+
+            font-size: 0.72rem;
+        }
+
+        .source {
+            margin-top: 10px;
+            overflow: hidden;
+
+            border: 1px solid var(--border);
+            border-radius: 7px;
+
+            background: var(--surface-soft);
+        }
+
+        .source:first-of-type {
+            margin-top: 0;
+        }
+
+        .source-header {
+            padding: 11px 13px;
+
+            border-bottom: 1px solid var(--border);
+
+            background: var(--surface-raised);
         }
 
         .source-label {
-            margin-bottom: 4px;
-            font-weight: 700;
-            color: #111827;
+            margin-bottom: 3px;
+
+            color: var(--text-secondary);
+
+            font-size: 0.8rem;
+            font-weight: 750;
         }
 
         .source-id {
-            margin-bottom: 10px;
-            font-size: 0.82rem;
-            color: #6b7280;
+            color: var(--text-muted);
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 0.69rem;
         }
 
         .excerpt {
             white-space: pre-wrap;
-            padding: 12px;
-            background: #f3f4f6;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            line-height: 1.45;
+
+            padding: 13px;
+
+            color: var(--text-secondary);
+            background: var(--surface-soft);
+
+            font-size: 0.81rem;
+            line-height: 1.55;
         }
 
-        .error {
-            margin: 0;
-            padding: 14px;
-            border: 1px solid #fca5a5;
-            border-radius: 6px;
-            color: #991b1b;
-            background: #fef2f2;
-            font-weight: 700;
-        }
+
+        /* ---------------------------------------------
+           RETRIEVED EVIDENCE
+        --------------------------------------------- */
 
         details {
-            margin-top: 26px;
-            padding-top: 18px;
-            border-top: 1px solid #e5e7eb;
+            margin-top: 24px;
+            padding-top: 17px;
+
+            border-top: 1px solid var(--border);
         }
 
         summary {
             cursor: pointer;
+
+            display: inline-flex;
+            align-items: center;
+
+            color: var(--text-muted);
+
+            font-size: 0.78rem;
             font-weight: 700;
-            color: #374151;
+        }
+
+        summary:hover {
+            color: var(--accent-light);
         }
 
         .retrieved-item {
-            margin-top: 14px;
-            padding: 14px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            background: #fafafa;
+            margin-top: 12px;
+            overflow: hidden;
+
+            border: 1px solid var(--border);
+            border-radius: 7px;
+
+            background: var(--surface-soft);
         }
 
         .retrieved-meta {
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            color: #4b5563;
+            padding: 9px 11px;
+
+            border-bottom: 1px solid var(--border);
+
+            background: var(--surface-raised);
+            color: var(--text-muted);
+
+            font-size: 0.71rem;
+        }
+
+        .retrieved-meta strong {
+            color: var(--text-secondary);
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
         }
 
         .empty-note {
-            color: #6b7280;
+            margin-top: 12px;
+            margin-bottom: 0;
+
+            color: var(--text-muted);
+
             font-style: italic;
+        }
+
+
+        /* ---------------------------------------------
+           ERRORS / EMPTY STATE
+        --------------------------------------------- */
+
+        .error {
+            margin: 0;
+            padding: 14px 15px;
+
+            border: 1px solid var(--red-border);
+            border-radius: 7px;
+
+            color: var(--red-text);
+            background: var(--red-bg);
+
+            font-weight: 650;
         }
 
         #no-results {
             display: none;
-            padding: 24px;
+
+            padding: 34px 24px;
+
             text-align: center;
-            color: #6b7280;
-            background: #ffffff;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: var(--surface);
+            color: var(--text-muted);
+
+            box-shadow: var(--shadow-sm);
+        }
+
+
+        /* ---------------------------------------------
+           FOOTER
+        --------------------------------------------- */
+
+        .page-footer {
+            display: flex;
+            justify-content: center;
+
+            margin-top: 36px;
+        }
+
+        .footer-note {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 7px 13px;
+            align-items: center;
+
+            color: var(--text-muted);
+
+            font-size: 0.72rem;
+        }
+
+        .footer-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-dot {
+            width: 4px;
+            height: 4px;
+
+            border-radius: 50%;
+
+            background: var(--accent);
+        }
+
+
+        /* ---------------------------------------------
+           RESPONSIVE
+        --------------------------------------------- */
+
+        @media (max-width: 860px) {
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .evidence-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 700px) {
-            body {
-                padding: 24px 14px 50px;
+            .page-shell {
+                padding:
+                    28px
+                    14px
+                    48px;
+            }
+
+            .page-header {
+                display: block;
+            }
+
+            .review-badge {
+                margin-top: 16px;
             }
 
             h1 {
-                font-size: 1.6rem;
+                font-size: 1.68rem;
+            }
+
+            .summary-grid {
+                gap: 9px;
+            }
+
+            .metric-card {
+                padding: 14px;
+            }
+
+            .metric-value {
+                font-size: 1.4rem;
+            }
+
+            .review-panel-top {
+                display: block;
+            }
+
+            .visible-results {
+                margin-top: 5px;
             }
 
             .card-header,
@@ -306,8 +1009,29 @@
                 padding: 18px;
             }
 
-            .filter-bar {
-                padding: 12px;
+            .question-heading {
+                gap: 10px;
+            }
+
+            .question-number {
+                min-width: 31px;
+                height: 31px;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .summary-grid {
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+            .context-bar {
+                display: block;
+            }
+
+            .context-item + .context-item {
+                margin-top: 4px;
             }
         }
     </style>
@@ -315,410 +1039,671 @@
 
 <body>
 
-    <h1>
-        Vendor Questionnaire Evidence Validation
-    </h1>
+    <main class="page-shell">
 
-    <div class="summary">
-        <strong>{{ questions_parsed }}</strong>
-        questions parsed
+        <header class="page-header">
 
-        &nbsp;|&nbsp;
+            <div class="header-copy">
 
-        <strong>{{ questions_attempted }}</strong>
-        analyzed
+                <div class="eyebrow">
+                    Third-Party Risk Evidence Review
+                </div>
 
-        &nbsp;|&nbsp;
+                <h1>
+                    Vendor Evidence Validator
+                </h1>
 
-        <strong>{{ successful_validations }}</strong>
-        successful
+                <p class="header-description">
+                    AI-assisted validation of vendor questionnaire items
+                    against submitted evidence, with source-level citations
+                    and human-owned final decisions.
+                </p>
 
-        &nbsp;|&nbsp;
+            </div>
 
-        <strong>{{ failed_validations }}</strong>
-        failed
-    </div>
+            <div class="review-badge">
+                <span class="review-dot"></span>
+                Human review required
+            </div>
 
-
-    <div class="filter-bar">
-
-        <button
-            class="filter-button active"
-            type="button"
-            data-filter="all"
-        >
-            All
-            <span
-                class="filter-count"
-                data-count="all"
-            ></span>
-        </button>
-
-        <button
-            class="filter-button"
-            type="button"
-            data-filter="validated"
-        >
-            Validated
-            <span
-                class="filter-count"
-                data-count="validated"
-            ></span>
-        </button>
-
-        <button
-            class="filter-button"
-            type="button"
-            data-filter="partially_validated"
-        >
-            Partially Validated
-            <span
-                class="filter-count"
-                data-count="partially_validated"
-            ></span>
-        </button>
-
-        <button
-            class="filter-button"
-            type="button"
-            data-filter="not_validated"
-        >
-            Not Validated
-            <span
-                class="filter-count"
-                data-count="not_validated"
-            ></span>
-        </button>
-
-        <button
-            class="filter-button"
-            type="button"
-            data-filter="contradicted"
-        >
-            Contradicted
-            <span
-                class="filter-count"
-                data-count="contradicted"
-            ></span>
-        </button>
-
-        <button
-            class="filter-button"
-            type="button"
-            data-filter="insufficient_evidence"
-        >
-            Insufficient Evidence
-            <span
-                class="filter-count"
-                data-count="insufficient_evidence"
-            ></span>
-        </button>
-
-        <button
-            class="filter-button"
-            type="button"
-            data-filter="error"
-        >
-            Errors
-            <span
-                class="filter-count"
-                data-count="error"
-            ></span>
-        </button>
-
-    </div>
+        </header>
 
 
-    <div id="results-container">
+        <div class="context-bar">
 
-        {% for item in validation_results %}
-
-            {% if item.error %}
-                {% set card_status = "error" %}
-            {% elif item.validation %}
-                {% set card_status = item.validation.status %}
-            {% else %}
-                {% set card_status = "error" %}
+            {% if questionnaire_name %}
+                <div class="context-item">
+                    Questionnaire:
+                    <strong>{{ questionnaire_name }}</strong>
+                </div>
             {% endif %}
 
-            <div
-                class="result-card"
-                data-status="{{ card_status }}"
-            >
+            {% if evidence_files_processed is defined %}
+                <div class="context-item">
+                    Evidence files:
+                    <strong>{{ evidence_files_processed }}</strong>
+                </div>
+            {% endif %}
 
-                <div class="card-header">
+            {% if total_evidence_chunks is defined %}
+                <div class="context-item">
+                    Evidence chunks:
+                    <strong>{{ total_evidence_chunks }}</strong>
+                </div>
+            {% endif %}
 
-                    <div class="question-position">
-                        Question {{ item.question_position }}
+        </div>
+
+
+        <section class="summary-grid">
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    Questions parsed
+                </div>
+
+                <p class="metric-value">
+                    {{ questions_parsed }}
+                </p>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    Analyzed
+                </div>
+
+                <p class="metric-value">
+                    {{ questions_attempted }}
+                </p>
+            </div>
+
+            <div class="metric-card metric-success">
+                <div class="metric-label">
+                    Completed
+                </div>
+
+                <p class="metric-value">
+                    {{ successful_validations }}
+                </p>
+            </div>
+
+            <div class="metric-card metric-failed">
+                <div class="metric-label">
+                    Errors
+                </div>
+
+                <p class="metric-value">
+                    {{ failed_validations }}
+                </p>
+            </div>
+
+        </section>
+
+
+        <section class="review-panel">
+
+            <div class="review-panel-top">
+
+                <div>
+
+                    <div class="review-panel-title">
+                        Review results
                     </div>
 
-                    <div class="question-text">
-                        {{ item.question.question_text }}
+                    <p class="review-panel-subtitle">
+                        Filter by validation outcome.
+                    </p>
+
+                </div>
+
+                <div class="visible-results">
+                    Showing
+                    <strong id="visible-result-count">
+                        {{ questions_attempted }}
+                    </strong>
+                    of
+                    <strong>{{ questions_attempted }}</strong>
+                </div>
+
+            </div>
+
+
+            <div class="filter-bar">
+
+                <button
+                    class="filter-button active"
+                    type="button"
+                    data-filter="all"
+                >
+                    All
+
+                    <span
+                        class="filter-count"
+                        data-count="all"
+                    ></span>
+                </button>
+
+                <button
+                    class="filter-button"
+                    type="button"
+                    data-filter="validated"
+                >
+                    Validated
+
+                    <span
+                        class="filter-count"
+                        data-count="validated"
+                    ></span>
+                </button>
+
+                <button
+                    class="filter-button"
+                    type="button"
+                    data-filter="partially_validated"
+                >
+                    Partially Validated
+
+                    <span
+                        class="filter-count"
+                        data-count="partially_validated"
+                    ></span>
+                </button>
+
+                <button
+                    class="filter-button"
+                    type="button"
+                    data-filter="not_validated"
+                >
+                    Not Validated
+
+                    <span
+                        class="filter-count"
+                        data-count="not_validated"
+                    ></span>
+                </button>
+
+                <button
+                    class="filter-button"
+                    type="button"
+                    data-filter="contradicted"
+                >
+                    Contradicted
+
+                    <span
+                        class="filter-count"
+                        data-count="contradicted"
+                    ></span>
+                </button>
+
+                <button
+                    class="filter-button"
+                    type="button"
+                    data-filter="insufficient_evidence"
+                >
+                    Insufficient Evidence
+
+                    <span
+                        class="filter-count"
+                        data-count="insufficient_evidence"
+                    ></span>
+                </button>
+
+                <button
+                    class="filter-button"
+                    type="button"
+                    data-filter="error"
+                >
+                    Errors
+
+                    <span
+                        class="filter-count"
+                        data-count="error"
+                    ></span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <div id="results-container">
+
+            {% for item in validation_results %}
+
+                {% if item.error %}
+                    {% set card_status = "error" %}
+                {% elif item.validation %}
+                    {% set card_status = item.validation.status %}
+                {% else %}
+                    {% set card_status = "error" %}
+                {% endif %}
+
+
+                <article
+                    class="result-card"
+                    data-status="{{ card_status }}"
+                >
+
+                    <div class="card-header">
+
+                        <div class="question-heading">
+
+                            <div class="question-number">
+                                {{ item.question_position }}
+                            </div>
+
+                            <div class="question-block">
+
+                                <div class="question-label">
+                                    Questionnaire item
+                                </div>
+
+                                <p class="question-text">
+                                    {{ item.question.question_text }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        {% if item.error %}
+
+                            <div class="status-row">
+
+                                <span
+                                    class="
+                                        status-badge
+                                        status-error
+                                    "
+                                >
+                                    Error
+                                </span>
+
+                            </div>
+
+
+                        {% elif item.validation %}
+
+                            <div class="status-row">
+
+                                <span
+                                    class="
+                                        status-badge
+                                        status-{{ item.validation.status }}
+                                    "
+                                >
+                                    {{
+                                        item.validation.status
+                                        .replace("_", " ")
+                                    }}
+                                </span>
+
+                                <span class="meta-badge">
+                                    Confidence:
+
+                                    <strong>
+                                        {{ item.validation.confidence }}
+                                    </strong>
+                                </span>
+
+                                <span class="meta-badge">
+                                    Evidence:
+
+                                    <strong>
+                                        {{ item.validation.evidence_strength }}
+                                    </strong>
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
                     </div>
 
 
                     {% if item.error %}
 
-                        <div class="status-row">
+                        <div class="card-body">
 
-                            <span
-                                class="
-                                    status-badge
-                                    status-error
-                                "
-                            >
-                                Error
-                            </span>
+                            <p class="error">
+                                Validation error:
+                                {{ item.error }}
+                            </p>
 
                         </div>
 
+
                     {% elif item.validation %}
 
-                        <div class="status-row">
+                        <div class="card-body">
 
-                            <span
+
+                            <div class="assessment-box">
+
+                                <h3>
+                                    Assessment
+                                </h3>
+
+                                <p>
+                                    {{ item.validation.explanation }}
+                                </p>
+
+                            </div>
+
+
+                            {% if
+                                item.validation.evidence_proves
+                                or
+                                item.validation.evidence_does_not_prove
+                            %}
+
+                                <div class="evidence-grid">
+
+
+                                    {% if item.validation.evidence_proves %}
+
+                                        <div
+                                            class="
+                                                evidence-panel
+                                                evidence-panel-proves
+                                            "
+                                        >
+
+                                            <h3>
+                                                What the evidence proves
+                                            </h3>
+
+                                            <ul>
+
+                                                {% for point in item.validation.evidence_proves %}
+
+                                                    <li>
+                                                        {{ point }}
+                                                    </li>
+
+                                                {% endfor %}
+
+                                            </ul>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    {% if item.validation.evidence_does_not_prove %}
+
+                                        <div
+                                            class="
+                                                evidence-panel
+                                                evidence-panel-missing
+                                            "
+                                        >
+
+                                            <h3>
+                                                What the evidence does not prove
+                                            </h3>
+
+                                            <ul>
+
+                                                {% for point in item.validation.evidence_does_not_prove %}
+
+                                                    <li>
+                                                        {{ point }}
+                                                    </li>
+
+                                                {% endfor %}
+
+                                            </ul>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if item.validation.gaps %}
+
+                                <div
+                                    class="
+                                        section
+                                        attention-panel
+                                        attention-gap
+                                    "
+                                >
+
+                                    <h3>
+                                        Gaps
+                                    </h3>
+
+                                    <ul>
+
+                                        {% for gap in item.validation.gaps %}
+
+                                            <li>
+                                                {{ gap }}
+                                            </li>
+
+                                        {% endfor %}
+
+                                    </ul>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if item.validation.contradictions %}
+
+                                <div
+                                    class="
+                                        section
+                                        attention-panel
+                                        attention-contradiction
+                                    "
+                                >
+
+                                    <h3>
+                                        Contradictions
+                                    </h3>
+
+                                    <ul>
+
+                                        {% for contradiction in item.validation.contradictions %}
+
+                                            <li>
+                                                {{ contradiction }}
+                                            </li>
+
+                                        {% endfor %}
+
+                                    </ul>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if item.validation.additional_evidence_needed %}
+
+                                <div
+                                    class="
+                                        section
+                                        attention-panel
+                                        attention-additional
+                                    "
+                                >
+
+                                    <h3>
+                                        Additional evidence needed
+                                    </h3>
+
+                                    <ul>
+
+                                        {% for evidence in item.validation.additional_evidence_needed %}
+
+                                            <li>
+                                                {{ evidence }}
+                                            </li>
+
+                                        {% endfor %}
+
+                                    </ul>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <div
                                 class="
-                                    status-badge
-                                    status-{{ item.validation.status }}
+                                    section
+                                    reviewer-action
                                 "
                             >
-                                {{
-                                    item.validation.status
-                                    .replace("_", " ")
-                                }}
-                            </span>
 
-                            <span class="meta-badge">
-                                Confidence:
-                                <strong>
-                                    {{ item.validation.confidence }}
-                                </strong>
-                            </span>
+                                <h3>
+                                    Reviewer action
+                                </h3>
 
-                            <span class="meta-badge">
-                                Evidence:
-                                <strong>
-                                    {{ item.validation.evidence_strength }}
-                                </strong>
-                            </span>
+                                <p>
+                                    {{ item.validation.reviewer_action }}
+                                </p>
+
+                            </div>
+
+
+                            {% if item.resolved_sources %}
+
+                                <div class="section">
+
+                                    <div class="sources-heading">
+
+                                        <h3>
+                                            Supporting sources
+                                        </h3>
+
+                                        <span class="sources-note">
+                                            Backend-resolved citations
+                                        </span>
+
+                                    </div>
+
+
+                                    {% for source in item.resolved_sources %}
+
+                                        <div class="source">
+
+                                            <div class="source-header">
+
+                                                <div class="source-label">
+                                                    {{ source.citation_label }}
+                                                </div>
+
+                                                <div class="source-id">
+                                                    {{ source.source_id }}
+                                                </div>
+
+                                            </div>
+
+                                            <div class="excerpt">
+                                                {{ source.evidence_excerpt }}
+                                            </div>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <details>
+
+                                <summary>
+                                    Show retrieved evidence
+                                </summary>
+
+
+                                {% for evidence in item.retrieval.retrieved_evidence %}
+
+                                    <div class="retrieved-item">
+
+                                        <div class="retrieved-meta">
+
+                                            <strong>
+                                                {{ evidence.source_id }}
+                                            </strong>
+
+                                            &nbsp;•&nbsp;
+
+                                            Retrieval score:
+                                            {{ evidence.hybrid_score }}
+
+                                        </div>
+
+                                        <div class="excerpt">
+                                            {{ evidence.text }}
+                                        </div>
+
+                                    </div>
+
+                                {% else %}
+
+                                    <p class="empty-note">
+                                        No retrieved evidence.
+                                    </p>
+
+                                {% endfor %}
+
+                            </details>
 
                         </div>
 
                     {% endif %}
 
-                </div>
+                </article>
 
+            {% endfor %}
 
-                {% if item.error %}
+        </div>
 
-                    <div class="card-body">
 
-                        <p class="error">
-                            Validation error:
-                            {{ item.error }}
-                        </p>
+        <div id="no-results">
+            No results match this filter.
+        </div>
 
-                    </div>
 
+        <footer class="page-footer">
 
-                {% elif item.validation %}
+            <div class="footer-note">
 
-                    <div class="card-body">
+                <span class="footer-item">
+                    Local AI inference
+                </span>
 
-                        <div class="section">
-                            <h3>Assessment</h3>
+                <span class="footer-dot"></span>
 
-                            <p>
-                                {{ item.validation.explanation }}
-                            </p>
-                        </div>
+                <span class="footer-item">
+                    Evidence-grounded validation
+                </span>
 
+                <span class="footer-dot"></span>
 
-                        {% if item.validation.evidence_proves %}
-
-                            <div class="section">
-                                <h3>
-                                    What the evidence proves
-                                </h3>
-
-                                <ul>
-                                    {% for point in item.validation.evidence_proves %}
-                                        <li>
-                                            {{ point }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-
-                        {% endif %}
-
-
-                        {% if item.validation.evidence_does_not_prove %}
-
-                            <div class="section">
-                                <h3>
-                                    What the evidence does not prove
-                                </h3>
-
-                                <ul>
-                                    {% for point in item.validation.evidence_does_not_prove %}
-                                        <li>
-                                            {{ point }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-
-                        {% endif %}
-
-
-                        {% if item.validation.gaps %}
-
-                            <div class="section">
-                                <h3>Gaps</h3>
-
-                                <ul>
-                                    {% for gap in item.validation.gaps %}
-                                        <li>
-                                            {{ gap }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-
-                        {% endif %}
-
-
-                        {% if item.validation.contradictions %}
-
-                            <div class="section">
-                                <h3>Contradictions</h3>
-
-                                <ul>
-                                    {% for contradiction in item.validation.contradictions %}
-                                        <li>
-                                            {{ contradiction }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-
-                        {% endif %}
-
-
-                        {% if item.validation.additional_evidence_needed %}
-
-                            <div class="section">
-                                <h3>
-                                    Additional evidence needed
-                                </h3>
-
-                                <ul>
-                                    {% for evidence in item.validation.additional_evidence_needed %}
-                                        <li>
-                                            {{ evidence }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-
-                        {% endif %}
-
-
-                        <div class="section">
-                            <h3>Reviewer action</h3>
-
-                            <p>
-                                {{ item.validation.reviewer_action }}
-                            </p>
-                        </div>
-
-
-                        {% if item.resolved_sources %}
-
-                            <div class="section">
-
-                                <h3>Sources</h3>
-
-                                {% for source in item.resolved_sources %}
-
-                                    <div class="source">
-
-                                        <div class="source-label">
-                                            {{ source.citation_label }}
-                                        </div>
-
-                                        <div class="source-id">
-                                            Source ID:
-                                            {{ source.source_id }}
-                                        </div>
-
-                                        <div class="excerpt">
-                                            {{ source.evidence_excerpt }}
-                                        </div>
-
-                                    </div>
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% endif %}
-
-
-                        <details>
-
-                            <summary>
-                                Show retrieved evidence
-                            </summary>
-
-                            {% for evidence in item.retrieval.retrieved_evidence %}
-
-                                <div class="retrieved-item">
-
-                                    <div class="retrieved-meta">
-
-                                        <strong>
-                                            {{ evidence.source_id }}
-                                        </strong>
-
-                                        &nbsp;|&nbsp;
-
-                                        Retrieval score:
-                                        {{ evidence.hybrid_score }}
-
-                                    </div>
-
-                                    <div class="excerpt">
-                                        {{ evidence.text }}
-                                    </div>
-
-                                </div>
-
-                            {% else %}
-
-                                <p class="empty-note">
-                                    No retrieved evidence.
-                                </p>
-
-                            {% endfor %}
-
-                        </details>
-
-                    </div>
-
-                {% endif %}
+                <span class="footer-item">
+                    Human-owned final decision
+                </span>
 
             </div>
 
-        {% endfor %}
+        </footer>
 
-    </div>
-
-
-    <div id="no-results">
-        No results match this filter.
-    </div>
+    </main>
 
 
     <script>
@@ -740,6 +1725,12 @@
             )
         );
 
+        const visibleResultCount =
+            document.getElementById(
+                "visible-result-count"
+            );
+
+
         function updateCounts() {
             const counts = {
                 all: cards.length,
@@ -752,7 +1743,8 @@
             };
 
             cards.forEach((card) => {
-                const status = card.dataset.status;
+                const status =
+                    card.dataset.status;
 
                 if (
                     Object.prototype.hasOwnProperty.call(
@@ -775,6 +1767,7 @@
             );
         }
 
+
         function applyFilter(filter) {
             let visibleCount = 0;
 
@@ -793,6 +1786,11 @@
                 }
             });
 
+            if (visibleResultCount) {
+                visibleResultCount.textContent =
+                    visibleCount;
+            }
+
             document.getElementById(
                 "no-results"
             ).style.display =
@@ -800,6 +1798,7 @@
                 ? "block"
                 : "none";
         }
+
 
         buttons.forEach((button) => {
             button.addEventListener(
@@ -823,6 +1822,7 @@
                 }
             );
         });
+
 
         updateCounts();
         applyFilter("all");
