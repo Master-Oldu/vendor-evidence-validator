@@ -1,30 +1,47 @@
 # Vendor Evidence Validator
 
-An AI-assisted third-party risk evidence-validation MVP that evaluates vendor questionnaire items against submitted evidence and returns structured, source-cited results for human review.
+An AI-assisted third-party risk evidence-validation MVP that evaluates vendor questionnaire requirements against submitted evidence and produces structured, traceable results for human review.
 
-The project focuses on a common TPRM problem: a questionnaire response may state that a control exists, but the response itself is not proof. When a vendor answer is available, the application treats it as a claim to be validated rather than as evidence.
+The project addresses a common TPRM problem: a questionnaire response may state that a security control exists, but the response itself is not proof.
 
-The workflow retrieves relevant evidence, evaluates whether the submitted material supports the questionnaire item, validates the AI's structured output, verifies cited source IDs, and resolves those citations back to the original evidence location.
+When a vendor answer is available, the application treats it as a claim to validate rather than as evidence.
+
+The workflow retrieves relevant submitted evidence, evaluates what that evidence actually demonstrates, validates the AI's structured output, verifies source selections against backend-owned evidence records, resolves reviewer-facing citations, and writes validation results back to the original questionnaire structure.
 
 ## Demo
 
+### Upload Workflow
+
+![Synthetic upload workflow](docs/assets/vendor-validator-upload-demo.png)
+
+### Validation Results
+
 ![Synthetic validation results](docs/assets/vendor-validator-results-demo.png)
 
-*Synthetic demonstration of third-party risk evidence validation results. No real vendor or client data is used.*
+### Validated Excel Output
+
+![Synthetic validated Excel output](docs/assets/vendor-validator-excel-demo.png)
+
+*Public demo screenshots must use synthetic or otherwise approved non-confidential data. Real vendor, client, questionnaire, or evidence content should not be published, even when partially redacted.*
 
 ## What It Does
 
-For each vendor questionnaire item, the application can:
+For each questionnaire item, the application can:
 
 - retrieve the most relevant submitted evidence
+- evaluate the full intent of the questionnaire requirement
 - determine a structured validation status
 - explain what the evidence supports
 - identify what the evidence does not establish
-- identify evidence gaps and contradictions
+- identify gaps and contradictions
 - recommend additional evidence when needed
 - provide a reviewer action
-- cite the evidence used in the assessment
-- preserve source provenance such as PDF page, document section, spreadsheet row, or text line
+- identify the evidence materially relied upon for the assessment
+- resolve reviewer-facing citations from backend-owned provenance
+- preserve source locations such as PDF page, document section, spreadsheet row, or text line
+- write validation results back to the corresponding row in an XLSX questionnaire
+- preserve the original questionnaire rather than overwriting it
+- support later validation batches that update the same validated workbook
 - require human review before a final risk decision
 
 ## Validation Statuses
@@ -37,45 +54,157 @@ The application uses five validation outcomes:
 - `contradicted`
 - `insufficient_evidence`
 
-These statuses are subject to backend consistency checks.
+The statuses have different evidence requirements and are subject to backend consistency checks.
 
-For example, a result cannot be accepted as `validated` unless supporting evidence exists and the cited source reference is valid. A contradiction must also be supported by retrieved evidence rather than inferred without a source.
+Examples:
+
+- `validated` requires evidence supporting the complete requirement and valid supporting citations.
+- `partially_validated` requires meaningful evidence supporting part of the requirement together with a remaining material gap.
+- `not_validated` is used when relevant evidence was reviewed but does not demonstrate a meaningful portion of the required control.
+- `contradicted` requires evidence supporting an incompatible or opposite fact.
+- `insufficient_evidence` is used when the available evidence is too weak, ambiguous, absent, or insufficiently relevant to determine whether the requirement is met.
+
+The backend rejects structurally inconsistent results rather than accepting the model output without validation.
 
 ## Evidence and Citation Model
 
-Evidence provenance is created by the application, not by the language model.
+Evidence provenance is owned by the application backend, not by the language model.
 
-Each extracted evidence chunk receives a source ID. Depending on the file type, provenance can include information such as:
+Each extracted evidence chunk receives an internal source ID.
 
-- PDF page number and section
-- DOCX heading or block location
-- spreadsheet sheet, row, and cell range
+Depending on the file type, backend provenance can include information such as:
+
+- PDF page number
+- PDF section or recognized reference identifier when available
+- DOCX heading, block, table, and row
+- XLSX sheet, row, and cell range
 - CSV row
 - TXT line range
 
-The language model may cite only source IDs supplied by the retrieval layer.
+The language model may reference only source IDs supplied by the retrieval layer.
 
-The backend then verifies those source IDs and resolves them to the original file and source location. This prevents the model from inventing filenames, page numbers, section names, or other citation details.
+The backend verifies those references and resolves them back to the original evidence records.
+
+This prevents the model from inventing:
+
+- filenames
+- page numbers
+- section names
+- spreadsheet locations
+- source references
+- other provenance metadata
+
+Internal source IDs are machine-facing only.
+
+They are used to connect model-selected evidence back to backend provenance but are not displayed in normal reviewer-facing results or exported questionnaire output.
+
+Reviewer-facing citations instead use labels such as:
+
+    Information Security Policy | Page 4 | Access Control
+
+or:
+
+    SOC 2 Type II Report | Page 33 | CC1.4.1
+
+When a reliable section or control identifier is not available, page-level provenance is still retained.
 
 ## Retrieval
 
-The current retrieval layer combines:
+The retrieval layer combines semantic and lexical search.
+
+Current retrieval uses:
 
 - Sentence Transformers semantic similarity
 - TF-IDF lexical similarity
+- hybrid scoring to rank evidence relevance
 
-The two scores are combined to retrieve the evidence chunks most relevant to each questionnaire item before AI validation occurs.
+The current scoring mix is:
 
-Retrieval happens before the language model is asked to make a validation decision.
+- 70% semantic similarity
+- 30% TF-IDF similarity
+
+The top evidence chunks are retrieved before the language model performs validation.
+
+This means the application is not simply looking for exact keyword matches. Relevant evidence can still be retrieved when the questionnaire wording and evidence wording differ.
+
+## Reviewer-Facing Sources vs Raw Retrieval
+
+The results interface separates two concepts.
+
+### Supporting Sources
+
+Supporting Sources are reviewer-facing citations.
+
+They identify the evidence location materially relied upon for the validation decision without exposing internal source IDs or attempting to reproduce complex document layouts.
+
+### Retrieved Evidence
+
+The expandable retrieved-evidence section is a developer/debug view.
+
+It shows raw chunks returned by the retrieval system together with retrieval scores.
+
+Because PDF text extraction does not always preserve the original visual layout of complex tables or multi-column documents, raw retrieved text may sometimes be difficult to read.
+
+Reviewer-facing validation should rely on the structured assessment and Supporting Sources rather than treating the debug retrieval view as a document preview.
+
+## Questionnaire Workflow
+
+The web workflow supports questionnaires that contain multiple worksheets and different column structures.
+
+The application can:
+
+1. upload a questionnaire and multiple evidence files
+2. detect candidate questionnaire worksheets
+3. allow the reviewer to select relevant worksheets
+4. map questionnaire columns such as:
+   - question
+   - optional question ID
+   - optional vendor answer
+   - optional description or context
+5. choose a starting question and validation batch size
+6. retrieve evidence and run AI-assisted validation
+7. review structured results
+8. download the validated questionnaire when using XLSX
+
+The application retains the original worksheet and row location for each parsed questionnaire item so validation results can be written back to the correct source row.
+
+## Validated Excel Output
+
+For XLSX questionnaires, the application creates a separate validated workbook rather than overwriting the original questionnaire.
+
+The validated workbook preserves:
+
+- the original workbook
+- worksheet structure
+- questionnaire questions
+- vendor answers
+- existing workbook content
+
+The application adds four review columns:
+
+- `Validation Status`
+- `Evidence Assessment`
+- `Supporting Evidence`
+- `Reviewer Action`
+
+Validation results are written to the exact worksheet and source row associated with each questionnaire item.
+
+Later validation batches update the same validated copy, allowing reviewers to validate a questionnaire incrementally without losing earlier results.
+
+The added validation columns use review-oriented formatting while leaving unrelated workbook content unchanged.
+
+Current validated-workbook export supports XLSX questionnaires.
+
+CSV questionnaires can be parsed and validated, but CSV round-trip export is not currently implemented.
 
 ## Supported Formats
 
-**Questionnaires**
+### Questionnaires
 
 - XLSX
 - CSV
 
-**Evidence**
+### Evidence
 
 - PDF
 - DOCX
@@ -83,9 +212,15 @@ Retrieval happens before the language model is asked to make a validation decisi
 - CSV
 - TXT
 
-Images are not supported in the current MVP.
+The current MVP does not support:
 
-Scanned or image-only PDF pages are not OCR'd.
+- JPG
+- PNG
+- screenshots as evidence
+- OCR
+- image-only or scanned PDFs
+
+Text-based PDFs are supported through PyMuPDF extraction.
 
 ## Architecture
 
@@ -98,37 +233,71 @@ The current MVP uses:
 - Sentence Transformers for semantic retrieval
 - TF-IDF for lexical retrieval
 - Ollama for local AI inference
-- Python validation logic for structured-output consistency and citation verification
+- Python validation logic for structured-output consistency
+- backend citation resolution for source integrity
 
 The core flow is:
 
     Questionnaire item
         ↓
+    Parse questionnaire context
+        ↓
     Retrieve relevant evidence
         ↓
     AI-assisted evidence assessment
         ↓
-    Validate structured result
+    Normalize and validate structured result
         ↓
-    Verify cited source IDs
+    Verify selected source IDs
         ↓
-    Resolve source provenance
+    Resolve backend-owned provenance
         ↓
-    Present result for human review
+    Present reviewer-facing assessment and citations
+        ↓
+    Write results to validated XLSX
+        ↓
+    Human reviewer makes the final decision
 
-The language model performs reasoning over retrieved evidence, while provenance and citation integrity remain controlled by the application backend.
+The language model performs evidence reasoning.
+
+The application backend controls provenance, citation integrity, result consistency, questionnaire row mapping, and workbook export.
+
+## Structured Validation Output
+
+The validation layer currently returns structured fields including:
+
+- status
+- confidence
+- evidence strength
+- explanation
+- evidence proved
+- evidence not proved
+- gaps
+- contradictions
+- additional evidence needed
+- reviewer action
+- human review requirement
+- source references
+
+Machine-only source references are resolved by the backend before results are presented to reviewers.
 
 ## Local AI
 
-The current development configuration uses Ollama with `qwen3:14b`.
+The current development configuration uses Ollama with:
 
-AI inference runs locally rather than through an external LLM API. Vendor evidence therefore remains within the local environment during model inference.
+    qwen3:14b
+
+AI inference runs locally rather than through an external LLM API.
+
+During the current local configuration, evidence supplied to the model remains within the local inference environment.
 
 Ollama must be installed and running before AI validation can be performed.
 
 The application expects Ollama at:
 
     http://localhost:11434
+
+The current provider configuration uses deterministic structured-output settings where applicable.
 
 ## Setup
 
@@ -152,37 +321,59 @@ Then open the local Flask URL shown in Terminal.
 
 Run the automated test suite with:
 
-    python -m unittest discover -s tests -v
+    python -m pytest
 
-The test suite covers validation behavior, status consistency, citation guardrails, unsupported source references, normalization behavior, and key Flask error-handling paths without requiring Ollama.
+The automated suite covers areas including:
+
+- validation behavior
+- validation status consistency
+- citation guardrails
+- rejection of unsupported source references
+- normalization behavior
+- human-facing source-ID cleanup
+- key Flask error-handling paths
+
+Additional regression coverage is being added for questionnaire export and cumulative workbook behavior.
+
+The automated tests do not require Ollama unless a test explicitly exercises live model inference.
 
 ## Data Safety
 
 The `uploads/` directory is excluded from Git.
 
-Real vendor evidence, questionnaires, client information, confidential assessment data, and other sensitive materials should never be committed to the public repository.
+Real vendor evidence, questionnaires, client information, confidential assessment data, and other sensitive material should never be committed to the public repository.
 
-Public demonstrations should use synthetic or otherwise approved non-confidential data only.
+Public demonstrations, documentation, test fixtures, and screenshots should use synthetic or otherwise approved non-confidential data only.
+
+The repository is intended to demonstrate the evidence-validation architecture and workflow without publishing real assessment material.
 
 ## Current MVP Limitations
 
-The following are intentionally deferred from the current version:
+The following are intentionally outside the current MVP:
 
-- OCR
+- OCR and scanned-document processing
 - image and screenshot evidence
 - authentication
 - user accounts
-- production deployment
+- multi-user workflow
+- production cloud deployment
+- persistent assessment database
 - external GRC platform integrations
 - vector database
-- persistent assessment storage
+- large-scale asynchronous processing
 - automated remediation workflows
-- large-scale batch optimization
+- continuous monitoring
+- enterprise queueing and concurrency
+- CSV questionnaire round-trip export
 
-These are product-expansion opportunities rather than requirements for demonstrating the core evidence-validation workflow.
+These are potential product-expansion areas rather than requirements for demonstrating the core evidence-validation workflow.
 
 ## Human Review
 
 Vendor evidence is rarely binary, and assessment context matters.
 
-This tool is designed to support a third-party risk reviewer, not replace professional judgment. The application retrieves evidence, structures the reasoning, exposes gaps and contradictions, and provides traceable citations, but the final validation and risk decision remain human-owned.
+This tool is designed to support a third-party risk reviewer, not replace professional judgment.
+
+The application accelerates evidence retrieval and first-pass analysis, structures the reasoning, identifies gaps and contradictions, and provides traceable source locations.
+
+The final validation, risk interpretation, exception handling, and business decision remain human-owned.

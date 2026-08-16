@@ -1,0 +1,153 @@
+{% set current_step = current_step|default(0) %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        {% block title %}Vendor Evidence Validator{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='styles.css') }}"
+    >
+</head>
+
+<body>
+
+    <main class="page-shell">
+
+        <header class="page-header">
+
+            <div class="header-copy">
+
+                <div class="eyebrow">
+                    Third-Party Risk Evidence Review
+                </div>
+
+                <h1>
+                    <a
+                        class="app-title-link"
+                        href="/"
+                        aria-label="Vendor Evidence Validator home"
+                    >
+                        Vendor Evidence Validator
+                    </a>
+                </h1>
+
+                <p class="header-description">
+                    {% block page_description %}
+                        AI-assisted validation of vendor questionnaire items
+                        against submitted evidence, with source-level citations
+                        and human-owned final decisions.
+                    {% endblock %}
+                </p>
+
+            </div>
+
+            <div class="review-badge">
+                <span class="review-dot"></span>
+                Local AI · Human review
+            </div>
+
+        </header>
+
+
+        {% if current_step %}
+
+            <nav
+                class="workflow-progress"
+                aria-label="Validation workflow"
+            >
+
+                <a
+                    class="
+                        workflow-step
+                        workflow-step-link
+                        {% if current_step == 1 %}is-active{% endif %}
+                        {% if current_step > 1 %}is-complete{% endif %}
+                    "
+                    href="/"
+                    aria-label="Return to upload"
+                >
+                    <span class="workflow-step-number">1</span>
+                    <span class="workflow-step-label">Upload</span>
+                </a>
+
+                <div
+                    class="
+                        workflow-step
+                        {% if current_step == 2 %}is-active{% endif %}
+                        {% if current_step > 2 %}is-complete{% endif %}
+                    "
+                >
+                    <span class="workflow-step-number">2</span>
+                    <span class="workflow-step-label">Select sheets</span>
+                </div>
+
+                <div
+                    class="
+                        workflow-step
+                        {% if current_step == 3 %}is-active{% endif %}
+                        {% if current_step > 3 %}is-complete{% endif %}
+                    "
+                >
+                    <span class="workflow-step-number">3</span>
+                    <span class="workflow-step-label">Map columns</span>
+                </div>
+
+                <div
+                    class="
+                        workflow-step
+                        {% if current_step == 4 %}is-active{% endif %}
+                    "
+                >
+                    <span class="workflow-step-number">4</span>
+                    <span class="workflow-step-label">Review results</span>
+                </div>
+
+            </nav>
+
+        {% endif %}
+
+
+        {% block content %}{% endblock %}
+
+
+        <footer class="page-footer">
+
+            <div class="footer-note">
+
+                <span class="footer-item">
+                    Local AI inference
+                </span>
+
+                <span class="footer-dot"></span>
+
+                <span class="footer-item">
+                    Evidence-grounded validation
+                </span>
+
+                <span class="footer-dot"></span>
+
+                <span class="footer-item">
+                    Human-owned final decision
+                </span>
+
+            </div>
+
+        </footer>
+
+    </main>
+
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,36 +1,319 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Vendor Evidence Validator</title>
-</head>
-<body>
-    <h1>Vendor Evidence Validator</h1>
-    <p>Upload a questionnaire and supporting evidence for validation.</p>
+{% extends "base.html" %}
+{% set current_step = 1 %}
 
-    <form method="POST" enctype="multipart/form-data">
+{% block title %}
+    Upload Files · Vendor Evidence Validator
+{% endblock %}
 
-        <label>Questionnaire</label><br>
-        <input
-            type="file"
-            name="questionnaire"
-            accept=".xlsx,.csv"
-            required
+{% block page_description %}
+    Upload the vendor questionnaire and supporting evidence.
+    Files stay in the local validation workflow.
+{% endblock %}
+
+{% block content %}
+
+    <section class="workflow-card workflow-card-large">
+
+        <div class="section-kicker">
+            Start validation
+        </div>
+
+        <h2 class="card-title">
+            Add questionnaire and evidence
+        </h2>
+
+        <p class="card-copy">
+            The questionnaire defines what needs to be validated.
+            Supporting evidence is retrieved and evaluated against each
+            questionnaire item.
+        </p>
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            class="app-form"
         >
-        <br><br>
-    
-        <label>Supporting Evidence</label><br>
-        <input
-            type="file"
-            name="evidence"
-            accept=".pdf,.docx,.xlsx,.csv,.txt"
-            multiple
-        >
-    
-        <br><br>
-    
-        <button type="submit">Upload Files</button>
-    
-    </form>
-</body>
-</html>
+
+            <div class="upload-grid">
+
+                <div class="upload-box">
+
+                    <div class="upload-icon">
+                        Q
+                    </div>
+
+                    <div class="upload-copy">
+
+                        <label
+                            for="questionnaire"
+                            class="field-label"
+                        >
+                            Questionnaire
+                        </label>
+
+                        <p class="field-help">
+                            XLSX or CSV
+                        </p>
+
+                    </div>
+
+                    <input
+                        id="questionnaire"
+                        class="file-input"
+                        type="file"
+                        name="questionnaire"
+                        accept=".xlsx,.csv"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="upload-box">
+
+                    <div class="upload-icon">
+                        E
+                    </div>
+
+                    <div class="upload-copy">
+
+                        <label
+                            for="evidence"
+                            class="field-label"
+                        >
+                            Supporting evidence
+                        </label>
+
+                        <p class="field-help">
+                            PDF, DOCX, XLSX, CSV, or TXT · Multiple files allowed
+                        </p>
+
+                    </div>
+
+                    <input
+                        id="evidence"
+                        class="file-input"
+                        type="file"
+                        name="evidence"
+                        accept=".pdf,.docx,.xlsx,.csv,.txt"
+                        multiple
+                    >
+
+                    <div
+                        id="selected-evidence-files"
+                        style="
+                            display: none;
+                            margin-top: 14px;
+                            width: 100%;
+                        "
+                    >
+                        <div
+                            style="
+                                font-size: 0.82rem;
+                                font-weight: 600;
+                                margin-bottom: 6px;
+                            "
+                        >
+                            Selected evidence
+                        </div>
+
+                        <div
+                            id="selected-evidence-list"
+                            style="
+                                display: flex;
+                                flex-direction: column;
+                                gap: 5px;
+                                font-size: 0.86rem;
+                            "
+                        ></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    class="button button-primary"
+                    type="submit"
+                >
+                    Upload and continue
+                    <span aria-hidden="true">→</span>
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <section class="info-strip">
+
+        <div class="info-strip-item">
+            <strong>Local processing</strong>
+            Evidence is evaluated through the locally configured AI provider.
+        </div>
+
+        <div class="info-strip-item">
+            <strong>Source-aware</strong>
+            Validation results retain backend-resolved evidence citations.
+        </div>
+
+        <div class="info-strip-item">
+            <strong>Reviewer-owned</strong>
+            The tool assists analysis; the final assessment remains human-owned.
+        </div>
+
+    </section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script>
+        const evidenceInput =
+            document.getElementById("evidence");
+
+        const selectedFilesContainer =
+            document.getElementById(
+                "selected-evidence-files"
+            );
+
+        const selectedFilesList =
+            document.getElementById(
+                "selected-evidence-list"
+            );
+
+        let accumulatedFiles = [];
+
+
+        function fileKey(file) {
+            return [
+                file.name,
+                file.size,
+                file.lastModified,
+            ].join("::");
+        }
+
+
+        function syncEvidenceInput() {
+            const transfer = new DataTransfer();
+
+            accumulatedFiles.forEach((file) => {
+                transfer.items.add(file);
+            });
+
+            evidenceInput.files = transfer.files;
+        }
+
+
+        function renderSelectedFiles() {
+            selectedFilesList.innerHTML = "";
+
+            if (accumulatedFiles.length === 0) {
+                selectedFilesContainer.style.display =
+                    "none";
+
+                return;
+            }
+
+            selectedFilesContainer.style.display =
+                "block";
+
+            accumulatedFiles.forEach(
+                (file, index) => {
+                    const row =
+                        document.createElement("div");
+
+                    row.style.display = "flex";
+                    row.style.alignItems = "center";
+                    row.style.justifyContent =
+                        "space-between";
+                    row.style.gap = "12px";
+
+                    const name =
+                        document.createElement("span");
+
+                    name.textContent = file.name;
+                    name.style.overflowWrap =
+                        "anywhere";
+
+                    const removeButton =
+                        document.createElement(
+                            "button"
+                        );
+
+                    removeButton.type = "button";
+                    removeButton.textContent =
+                        "Remove";
+
+                    removeButton.style.border =
+                        "none";
+                    removeButton.style.background =
+                        "transparent";
+                    removeButton.style.cursor =
+                        "pointer";
+                    removeButton.style.font =
+                        "inherit";
+                    removeButton.style.fontSize =
+                        "0.8rem";
+                    removeButton.style.opacity =
+                        "0.75";
+                    removeButton.style.padding =
+                        "2px 0";
+
+                    removeButton.addEventListener(
+                        "click",
+                        () => {
+                            accumulatedFiles.splice(
+                                index,
+                                1
+                            );
+
+                            syncEvidenceInput();
+                            renderSelectedFiles();
+                        }
+                    );
+
+                    row.appendChild(name);
+                    row.appendChild(
+                        removeButton
+                    );
+
+                    selectedFilesList.appendChild(
+                        row
+                    );
+                }
+            );
+        }
+
+
+        evidenceInput.addEventListener(
+            "change",
+            () => {
+                const existingKeys = new Set(
+                    accumulatedFiles.map(fileKey)
+                );
+
+                Array.from(
+                    evidenceInput.files
+                ).forEach((file) => {
+                    const key = fileKey(file);
+
+                    if (!existingKeys.has(key)) {
+                        accumulatedFiles.push(file);
+                        existingKeys.add(key);
+                    }
+                });
+
+                syncEvidenceInput();
+                renderSelectedFiles();
+            }
+        );
+    </script>
+
+{% endblock %}

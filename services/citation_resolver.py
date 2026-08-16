@@ -1,5 +1,65 @@
+def normalize_evidence_display_name(file_name):
+    """
+    Return a cleaner display-only evidence filename.
+
+    This does not modify the original filename or backend
+    provenance. It is used only for user-facing labels.
+    """
+
+    if file_name is None:
+        return ""
+
+    display_name = str(file_name).strip()
+
+    known_extensions = (
+        ".pdf",
+        ".docx",
+        ".xlsx",
+        ".csv",
+        ".txt",
+    )
+
+    lower_name = display_name.lower()
+
+    for extension in known_extensions:
+        if lower_name.endswith(extension):
+            display_name = display_name[
+                :-len(extension)
+            ]
+            break
+
+    display_name = display_name.replace(
+        "_",
+        " ",
+    )
+
+    display_name = " ".join(
+        display_name.split()
+    )
+
+    return display_name
+
+
+def _same_display_text(first, second):
+    if not first or not second:
+        return False
+
+    normalize = lambda value: " ".join(
+        str(value).lower().split()
+    )
+
+    return normalize(first) == normalize(second)
+
+
 def build_citation_label(evidence_item):
     file_name = evidence_item["file_name"]
+
+    display_name = (
+        normalize_evidence_display_name(
+            file_name
+        )
+    )
+
     file_type = evidence_item.get(
         "file_type",
         "",
@@ -10,12 +70,16 @@ def build_citation_label(evidence_item):
         {},
     )
 
-    parts = [file_name]
+    parts = [display_name]
 
     # PDF
     if file_type == ".pdf":
         pdf_page_number = provenance.get(
             "pdf_page_number"
+        )
+
+        reference_identifier = provenance.get(
+            "reference_identifier"
         )
 
         section_heading = provenance.get(
@@ -24,10 +88,21 @@ def build_citation_label(evidence_item):
 
         if pdf_page_number is not None:
             parts.append(
-                f"PDF page {pdf_page_number}"
+                f"Page {pdf_page_number}"
             )
 
-        if section_heading:
+        if reference_identifier:
+            parts.append(
+                reference_identifier
+            )
+
+        elif (
+            section_heading
+            and not _same_display_text(
+                section_heading,
+                display_name,
+            )
+        ):
             parts.append(
                 section_heading
             )
@@ -194,6 +269,13 @@ def resolve_source_references(
                 "file_name": evidence_item[
                     "file_name"
                 ],
+                "display_name": (
+                    normalize_evidence_display_name(
+                        evidence_item[
+                            "file_name"
+                        ]
+                    )
+                ),
                 "file_type": evidence_item[
                     "file_type"
                 ],

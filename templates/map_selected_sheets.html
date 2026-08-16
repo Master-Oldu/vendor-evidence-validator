@@ -1,22 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Map Questionnaire Worksheets</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% set current_step = 3 %}
 
-    <h1>Map Questionnaire Worksheets</h1>
+{% block title %}
+    Map Columns · Vendor Evidence Validator
+{% endblock %}
 
-    <p>
-        Map the columns for each selected worksheet.
-    </p>
+{% block page_description %}
+    Map the questionnaire fields for each selected worksheet,
+    then choose the validation batch to run.
+{% endblock %}
 
-    <p>
-        <strong>Questionnaire:</strong> {{ questionnaire_name }}
-    </p>
+{% block content %}
 
-    <form method="POST" action="/map-selected-sheets">
+    <div class="context-bar">
+        <div class="context-item">
+            Questionnaire:
+            <strong>{{ questionnaire_name }}</strong>
+        </div>
+
+        <div class="context-item">
+            Selected worksheets:
+            <strong>{{ sheets|length }}</strong>
+        </div>
+    </div>
+
+
+    <form
+        id="validation-form"
+        method="POST"
+        action="/map-selected-sheets"
+        class="app-form"
+    >
 
         <input
             type="hidden"
@@ -32,94 +46,181 @@
             >
         {% endfor %}
 
-        {% for sheet in sheets %}
 
-            <hr>
+        <div class="mapping-stack">
 
-            <h2>{{ sheet.sheet_name }}</h2>
+            {% for sheet in sheets %}
 
-            <p>
-                {{ sheet.data_rows }} detected rows
-            </p>
+                <section class="workflow-card sheet-map-card">
 
-            <input
-                type="hidden"
-                name="sheet_name_{{ loop.index0 }}"
-                value="{{ sheet.sheet_name }}"
-            >
+                    <div class="sheet-map-header">
 
-            <input
-                type="hidden"
-                name="header_row_{{ loop.index0 }}"
-                value="{{ sheet.header_row }}"
-            >
+                        <div>
 
-            <label>
-                Question column
-            </label><br>
+                            <div class="section-kicker">
+                                Worksheet {{ loop.index }}
+                            </div>
 
-            <select
-                name="question_column_{{ loop.index0 }}"
-                required
-            >
-                <option value="">Select column</option>
+                            <h2 class="card-title">
+                                {{ sheet.sheet_name }}
+                            </h2>
 
-                {% for column in sheet.columns %}
-                    <option value="{{ column }}">
-                        {{ column }}
-                    </option>
-                {% endfor %}
-            </select>
+                            <p class="card-copy">
+                                {{ sheet.data_rows }} detected rows
+                            </p>
 
-            <br><br>
+                        </div>
 
-            <label>
-                Question ID column (optional)
-            </label><br>
+                        <div class="sheet-row-badge">
+                            Header row {{ sheet.header_row + 1 }}
+                        </div>
 
-            <select name="id_column_{{ loop.index0 }}">
-                <option value="">None</option>
+                    </div>
 
-                {% for column in sheet.columns %}
-                    <option value="{{ column }}">
-                        {{ column }}
-                    </option>
-                {% endfor %}
-            </select>
 
-            <br><br>
+                    <input
+                        type="hidden"
+                        name="sheet_name_{{ loop.index0 }}"
+                        value="{{ sheet.sheet_name }}"
+                    >
 
-            <label>
-                Vendor answer column (optional)
-            </label><br>
+                    <input
+                        type="hidden"
+                        name="header_row_{{ loop.index0 }}"
+                        value="{{ sheet.header_row }}"
+                    >
 
-            <select name="answer_column_{{ loop.index0 }}">
-                <option value="">None</option>
 
-                {% for column in sheet.columns %}
-                    <option value="{{ column }}">
-                        {{ column }}
-                    </option>
-                {% endfor %}
-            </select>
+                    <div class="mapping-grid">
 
-            <br><br>
+                        <div class="field">
 
-            <label>
-                Description / context column (optional)
-            </label><br>
+                            <label
+                                class="field-label"
+                                for="question_column_{{ loop.index0 }}"
+                            >
+                                Question column
+                                <span class="required-mark">*</span>
+                            </label>
 
-            <select name="description_column_{{ loop.index0 }}">
-                <option value="">None</option>
+                            <p class="field-help">
+                                The column containing the questionnaire question.
+                            </p>
 
-                {% for column in sheet.columns %}
-                    <option value="{{ column }}">
-                        {{ column }}
-                    </option>
-                {% endfor %}
-            </select>
+                            <select
+                                id="question_column_{{ loop.index0 }}"
+                                name="question_column_{{ loop.index0 }}"
+                                required
+                            >
+                                <option value="">Select column</option>
 
-        {% endfor %}
+                                {% for column in sheet.columns %}
+                                    <option value="{{ column }}">
+                                        {{ column }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label
+                                class="field-label"
+                                for="id_column_{{ loop.index0 }}"
+                            >
+                                Question ID column
+                                <span class="optional-mark">Optional</span>
+                            </label>
+
+                            <p class="field-help">
+                                Control ID, question number, or another identifier.
+                            </p>
+
+                            <select
+                                id="id_column_{{ loop.index0 }}"
+                                name="id_column_{{ loop.index0 }}"
+                            >
+                                <option value="">None</option>
+
+                                {% for column in sheet.columns %}
+                                    <option value="{{ column }}">
+                                        {{ column }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label
+                                class="field-label"
+                                for="answer_column_{{ loop.index0 }}"
+                            >
+                                Vendor answer column
+                                <span class="optional-mark">Optional</span>
+                            </label>
+
+                            <p class="field-help">
+                                Treated as the vendor's claim, not as evidence.
+                            </p>
+
+                            <select
+                                id="answer_column_{{ loop.index0 }}"
+                                name="answer_column_{{ loop.index0 }}"
+                            >
+                                <option value="">None</option>
+
+                                {% for column in sheet.columns %}
+                                    <option value="{{ column }}">
+                                        {{ column }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label
+                                class="field-label"
+                                for="description_column_{{ loop.index0 }}"
+                            >
+                                Description / context column
+                                <span class="optional-mark">Optional</span>
+                            </label>
+
+                            <p class="field-help">
+                                Additional context that helps interpret the question.
+                            </p>
+
+                            <select
+                                id="description_column_{{ loop.index0 }}"
+                                name="description_column_{{ loop.index0 }}"
+                            >
+                                <option value="">None</option>
+
+                                {% for column in sheet.columns %}
+                                    <option value="{{ column }}">
+                                        {{ column }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            {% endfor %}
+
+        </div>
+
 
         <input
             type="hidden"
@@ -127,71 +228,244 @@
             value="{{ sheets|length }}"
         >
 
-        <hr>
 
-        <h2>Validation Batch</h2>
+        <section class="workflow-card batch-card">
 
-        <p>
-            Choose where to begin and how many
-            questionnaire questions to validate.
-        </p>
+            <div>
 
-        <label for="validation_start">
-            Start at question
-        </label><br>
+                <div class="section-kicker">
+                    Validation batch
+                </div>
 
-        <input
-            id="validation_start"
-            name="validation_start"
-            type="number"
-            min="1"
-            value="1"
-            required
-        >
+                <h2 class="card-title">
+                    Choose where to start
+                </h2>
 
-        <br><br>
+                <p class="card-copy">
+                    Each questionnaire item is evaluated separately by the
+                    local AI model. Smaller batches make testing and review easier.
+                </p>
 
-        <label for="validation_limit">
-            Questions to validate
-        </label><br>
+            </div>
 
-        <select
-            id="validation_limit"
-            name="validation_limit"
-            required
-        >
-            <option value="1">
-                1 question
-            </option>
 
-            <option value="3" selected>
-                3 questions
-            </option>
+            <div class="batch-grid">
 
-            <option value="5">
-                5 questions
-            </option>
-        </select>
+                <div class="field">
 
-        <p>
-            Example: start at question 40 and
-            validate 3 to process questions
-            40 through 42.
-        </p>
+                    <label
+                        class="field-label"
+                        for="validation_start"
+                    >
+                        Start at question
+                    </label>
 
-        <p>
-            Larger batches will take longer because
-            each question is evaluated separately
-            by the local AI model.
-        </p>
+                    <input
+                        id="validation_start"
+                        name="validation_start"
+                        type="number"
+                        min="1"
+                        value="1"
+                        required
+                    >
 
-        <br>
+                </div>
 
-        <button type="submit">
-            Run Validation
-        </button>
+
+                <div class="field">
+
+                    <label
+                        class="field-label"
+                        for="validation_limit"
+                    >
+                        Questions to validate
+                    </label>
+
+                    <select
+                        id="validation_limit"
+                        name="validation_limit"
+                        required
+                    >
+                        <option value="1">
+                            1 question
+                        </option>
+
+                        <option value="3" selected>
+                            3 questions
+                        </option>
+
+                        <option value="5">
+                            5 questions
+                        </option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="batch-example">
+                Example: start at question 40 and validate 3 to process
+                questions 40 through 42.
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    class="button button-secondary"
+                    href="/"
+                >
+                    Start over
+                </a>
+
+                <button
+                    id="run-validation-button"
+                    class="button button-primary"
+                    type="submit"
+                >
+                    Run validation
+                    <span aria-hidden="true">→</span>
+                </button>
+
+            </div>
+
+        </section>
 
     </form>
 
-</body>
-</html>
+
+    <div
+        id="validation-loading"
+        class="validation-loading"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        hidden
+    >
+
+        <div class="validation-loading-card">
+
+            <div
+                class="validation-spinner"
+                aria-hidden="true"
+            ></div>
+
+            <div class="section-kicker">
+                Local AI processing
+            </div>
+
+            <h2 class="validation-loading-title">
+                Running validation…
+            </h2>
+
+            <p
+                id="validation-loading-message"
+                class="validation-loading-message"
+            >
+                Retrieving relevant evidence, evaluating questionnaire
+                items, resolving citations, and preparing the validated
+                questionnaire.
+            </p>
+
+            <p class="validation-loading-note">
+                Keep this tab open. Local AI processing can take a few minutes,
+                especially for larger batches.
+            </p>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script>
+        const validationForm =
+            document.getElementById(
+                "validation-form"
+            );
+
+        const validationLoading =
+            document.getElementById(
+                "validation-loading"
+            );
+
+        const validationLoadingMessage =
+            document.getElementById(
+                "validation-loading-message"
+            );
+
+        const validationLimit =
+            document.getElementById(
+                "validation_limit"
+            );
+
+        const runValidationButton =
+            document.getElementById(
+                "run-validation-button"
+            );
+
+
+        function resetValidationLoading() {
+            if (validationLoading) {
+                validationLoading.hidden = true;
+            }
+
+            if (runValidationButton) {
+                runValidationButton.disabled = false;
+            }
+
+            document.body.classList.remove(
+                "validation-running"
+            );
+        }
+
+
+        if (validationForm) {
+            validationForm.addEventListener(
+                "submit",
+                () => {
+                    const batchSize =
+                        Number(
+                            validationLimit?.value || 1
+                        );
+
+                    const itemLabel =
+                        batchSize === 1
+                        ? "item"
+                        : "items";
+
+                    if (validationLoadingMessage) {
+                        validationLoadingMessage.textContent =
+                            `Retrieving relevant evidence and evaluating `
+                            + `${batchSize} questionnaire ${itemLabel}. `
+                            + `Citations will be resolved and the validated `
+                            + `questionnaire prepared when analysis completes.`;
+                    }
+
+                    if (runValidationButton) {
+                        runValidationButton.disabled = true;
+                    }
+
+                    if (validationLoading) {
+                        validationLoading.hidden = false;
+                    }
+
+                    document.body.classList.add(
+                        "validation-running"
+                    );
+                }
+            );
+        }
+
+
+        window.addEventListener(
+            "pageshow",
+            resetValidationLoading
+        );
+    </script>
+
+{% endblock %}

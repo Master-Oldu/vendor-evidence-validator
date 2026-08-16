@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 
 from services.ai_provider import OllamaProvider
 from services.citation_resolver import (
@@ -9,6 +9,9 @@ from services.citation_resolver import (
 from services.evidence_parser import process_evidence_files
 from services.evidence_retriever import EvidenceRetriever
 from services.evidence_validator import validate_question
+from services.questionnaire_exporter import (
+    export_validation_results,
+)
 from services.questionnaire_parser import (
     detect_questionnaire_sheets,
     parse_questionnaire_with_mapping,
@@ -446,6 +449,7 @@ def map_selected_sheets():
 
     all_questions = []
     sheet_results = []
+    sheet_header_rows = {}
 
     for index in range(sheet_count):
         sheet_name = request.form.get(
@@ -486,13 +490,15 @@ def map_selected_sheets():
             )
 
         try:
+            parsed_header_row = int(
+                header_row
+            )
+
             questions = (
                 parse_questionnaire_with_mapping(
                     file_path=questionnaire_path,
                     sheet_name=sheet_name,
-                    header_row=int(
-                        header_row
-                    ),
+                    header_row=parsed_header_row,
                     question_column=(
                         question_column
                     ),
@@ -518,6 +524,10 @@ def map_selected_sheets():
         all_questions.extend(
             questions
         )
+
+        sheet_header_rows[
+            sheet_name
+        ] = parsed_header_row
 
         sheet_results.append(
             {
@@ -634,6 +644,37 @@ def map_selected_sheets():
         )
     )
 
+    validated_questionnaire_name = None
+
+    if (
+        questionnaire_path.suffix.lower()
+        == ".xlsx"
+    ):
+        try:
+            validated_path = (
+                export_validation_results(
+                    questionnaire_path=(
+                        questionnaire_path
+                    ),
+                    validation_results=(
+                        validation_batch
+                    ),
+                    sheet_header_rows=(
+                        sheet_header_rows
+                    ),
+                )
+            )
+
+            validated_questionnaire_name = (
+                validated_path.name
+            )
+
+        except Exception as error:
+            print(
+                "Validated questionnaire export "
+                f"failed: {error}"
+            )
+
     successful_validations = sum(
         1
         for result in validation_batch
@@ -688,6 +729,45 @@ def map_selected_sheets():
         sheet_results=(
             sheet_results
         ),
+        validated_questionnaire_name=(
+            validated_questionnaire_name
+        ),
+    )
+
+
+@app.route(
+    "/download-validated/<path:filename>",
+    methods=["GET"],
+)
+def download_validated_questionnaire(
+    filename,
+):
+    if not filename.endswith(
+        "_validated.xlsx"
+    ):
+        return render_validation_error(
+            "The requested validated questionnaire "
+            "is not available.",
+            status_code=404,
+        )
+
+    file_path = (
+        UPLOAD_FOLDER
+        / filename
+    )
+
+    if not file_path.exists():
+        return render_validation_error(
+            "The validated questionnaire "
+            "could not be found.",
+            filename,
+            status_code=404,
+        )
+
+    return send_from_directory(
+        UPLOAD_FOLDER.resolve(),
+        filename,
+        as_attachment=True,
     )
 
 

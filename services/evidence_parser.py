@@ -64,6 +64,102 @@ def split_text_into_chunks(
 # PDF
 # -------------------------
 
+PDF_REFERENCE_PATTERNS = (
+    r"\bCC\d+(?:\.\d+)+\b",
+    r"\b(?:A|C|P|PI)\d+(?:\.\d+)+\b",
+    r"\bA\.\d+(?:\.\d+)+\b",
+    r"\b(?:ID|PR|DE|RS|RC)\.[A-Z]{2,4}-\d+\b",
+    (
+        r"\b(?:AC|AT|AU|CA|CM|CP|IA|IR|MA|MP|PE|PL|PM|PS|PT|"
+        r"RA|SA|SC|SI|SR)-\d+(?:\(\d+\))?\b"
+    ),
+    r"\b\d{2}\.[a-z]\b",
+)
+
+PDF_CONTEXTUAL_REFERENCE_PATTERN = re.compile(
+    (
+        r"\b(?:Requirement|Req\.?|Control|Clause|Safeguard)\s+"
+        r"(\d+(?:\.\d+)+)\b"
+    ),
+    re.IGNORECASE,
+)
+
+
+def extract_pdf_reference_identifier(text):
+    """
+    Return one conservative, source-derived control/reference identifier.
+
+    This is used only as backend provenance for a human-facing citation
+    label. If a chunk contains multiple unrelated identifiers, return
+    None rather than guessing which identifier is the right locator.
+    """
+
+    if not text:
+        return None
+
+    matches = []
+
+    for pattern in PDF_REFERENCE_PATTERNS:
+        matches.extend(
+            re.findall(
+                pattern,
+                text,
+                flags=re.IGNORECASE,
+            )
+        )
+
+    matches.extend(
+        match.group(1)
+        for match in (
+            PDF_CONTEXTUAL_REFERENCE_PATTERN.finditer(
+                text
+            )
+        )
+    )
+
+    unique_matches = []
+
+    for match in matches:
+        cleaned_match = str(match).strip()
+
+        if not cleaned_match:
+            continue
+
+        if cleaned_match not in unique_matches:
+            unique_matches.append(
+                cleaned_match
+            )
+
+    if not unique_matches:
+        return None
+
+    if len(unique_matches) == 1:
+        return unique_matches[0]
+
+    most_specific = max(
+        unique_matches,
+        key=len,
+    )
+
+    related_matches = all(
+        (
+            match == most_specific
+            or most_specific.startswith(
+                f"{match}."
+            )
+            or match.startswith(
+                f"{most_specific}."
+            )
+        )
+        for match in unique_matches
+    )
+
+    if related_matches:
+        return most_specific
+
+    return None
+
+
 def is_likely_heading(text):
     text = text.strip()
 
@@ -147,7 +243,6 @@ def split_pdf_page_into_passages(text):
     ]
 
     passages = []
-
     current_heading = None
 
     for block in blocks:
@@ -257,6 +352,17 @@ def chunk_pdf_pages(pages):
                     provenance[
                         "section_heading"
                     ] = passage["heading"]
+
+                reference_identifier = (
+                    extract_pdf_reference_identifier(
+                        passage_chunk["text"]
+                    )
+                )
+
+                if reference_identifier:
+                    provenance[
+                        "reference_identifier"
+                    ] = reference_identifier
 
                 chunks.append(
                     {

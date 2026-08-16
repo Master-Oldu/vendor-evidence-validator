@@ -1,58 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Select Questionnaire Worksheets</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% set current_step = 2 %}
 
-    <h1>Select Questionnaire Worksheets</h1>
+{% block title %}
+    Select Worksheets · Vendor Evidence Validator
+{% endblock %}
 
-    <p>
-        Choose the worksheet or worksheets that contain questionnaire questions.
-    </p>
+{% block page_description %}
+    Choose the worksheet or worksheets that contain the questionnaire
+    items you want to validate.
+{% endblock %}
 
-    <p>
-        <strong>Questionnaire:</strong> {{ questionnaire_name }}
-    </p>
+{% block content %}
 
-    <form method="POST" action="/select-sheets">
+    <div class="context-bar">
+        <div class="context-item">
+            Questionnaire:
+            <strong>{{ questionnaire_name }}</strong>
+        </div>
 
-        <input
-            type="hidden"
-            name="questionnaire_name"
-            value="{{ questionnaire_name }}"
+        <div class="context-item">
+            Detected worksheets:
+            <strong>{{ sheets|length }}</strong>
+        </div>
+    </div>
+
+
+    <section class="workflow-card">
+
+        <div class="section-kicker">
+            Worksheet scope
+        </div>
+
+        <h2 class="card-title">
+            Select questionnaire worksheets
+        </h2>
+
+        <p class="card-copy">
+            Select only sheets that contain questionnaire questions.
+            You will map their columns on the next screen.
+        </p>
+
+        <form
+            method="POST"
+            action="/select-sheets"
+            class="app-form"
         >
 
-        {% for evidence_name in evidence_names %}
             <input
                 type="hidden"
-                name="evidence_names"
-                value="{{ evidence_name }}"
+                name="questionnaire_name"
+                value="{{ questionnaire_name }}"
             >
-        {% endfor %}
 
-        {% for sheet in sheets %}
-            <div>
-                <label>
-                    <input
-                        type="checkbox"
-                        name="selected_sheets"
-                        value="{{ sheet.sheet_name }}"
-                    >
+            {% for evidence_name in evidence_names %}
+                <input
+                    type="hidden"
+                    name="evidence_names"
+                    value="{{ evidence_name }}"
+                >
+            {% endfor %}
 
-                    {{ sheet.sheet_name }}
-                    — {{ sheet.data_rows }} rows
-                </label>
+
+            <div class="sheet-list">
+
+                {% for sheet in sheets %}
+
+                    <label class="sheet-choice">
+
+                        <span class="sheet-checkbox-wrap">
+                            <input
+                                class="sheet-checkbox"
+                                type="checkbox"
+                                name="selected_sheets"
+                                value="{{ sheet.sheet_name }}"
+                            >
+                        </span>
+
+                        <span class="sheet-choice-copy">
+
+                            <span class="sheet-choice-title">
+                                {{ sheet.sheet_name }}
+                            </span>
+
+                            <span class="sheet-choice-meta">
+                                {{ sheet.data_rows }} detected rows
+                            </span>
+
+                        </span>
+
+                        <span
+                            class="sheet-choice-arrow"
+                            aria-hidden="true"
+                        >
+                            →
+                        </span>
+
+                    </label>
+
+                {% endfor %}
+
             </div>
-            <br>
-        {% endfor %}
 
-        <button type="submit">
-            Continue
-        </button>
 
-    </form>
+            <div class="form-actions">
 
-</body>
-</html>
+                <a
+                    class="button button-secondary"
+                    href="/"
+                >
+                    Start over
+                </a>
+
+                <button
+                    class="button button-primary"
+                    type="submit"
+                >
+                    Continue to column mapping
+                    <span aria-hidden="true">→</span>
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+{% endblock %}
